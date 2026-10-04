@@ -81,6 +81,23 @@ export interface Conversation {
   model: string;
   privacyMode: PrivacyMode;
   map: PlaceholderMap;
+  /** Set when the conversation was started with a custom agent. */
+  agentId?: string;
+}
+
+/** A user-defined agent. Lives only in this browser, like conversations. */
+export interface Agent {
+  id: string;
+  name: string;
+  description: string;
+  instructions: string;
+  /** Up to four conversation starters shown on the agent's empty chat. */
+  starters: string[];
+  privacyMode: PrivacyMode;
+  /** Start chats with the Solana connector on. */
+  solana: boolean;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface StoredImage {
@@ -144,6 +161,7 @@ interface VeilDB extends DBSchema {
   images: { key: string; value: StoredImage; indexes: { "by-created": number } };
   videos: { key: string; value: StoredVideo; indexes: { "by-created": number } };
   projects: { key: string; value: CodeProject; indexes: { "by-updated": number } };
+  agents: { key: string; value: Agent; indexes: { "by-updated": number } };
   kv: { key: string; value: unknown };
 }
 
@@ -151,21 +169,26 @@ let dbPromise: Promise<IDBPDatabase<VeilDB>> | null = null;
 
 // The IndexedDB name predates the rename to Veil; keeping it preserves existing local history.
 export function db() {
-  dbPromise ??= openDB<VeilDB>("tacit", 1, {
-    upgrade(d) {
-      d.createObjectStore("conversations", { keyPath: "id" }).createIndex("by-updated", "updatedAt");
-      d.createObjectStore("messages", { keyPath: "id" }).createIndex("by-conversation", ["conversationId", "createdAt"]);
-      d.createObjectStore("images", { keyPath: "id" }).createIndex("by-created", "createdAt");
-      d.createObjectStore("videos", { keyPath: "id" }).createIndex("by-created", "createdAt");
-      d.createObjectStore("projects", { keyPath: "id" }).createIndex("by-updated", "updatedAt");
-      d.createObjectStore("kv");
+  dbPromise ??= openDB<VeilDB>("tacit", 2, {
+    upgrade(d, oldVersion) {
+      if (oldVersion < 1) {
+        d.createObjectStore("conversations", { keyPath: "id" }).createIndex("by-updated", "updatedAt");
+        d.createObjectStore("messages", { keyPath: "id" }).createIndex("by-conversation", ["conversationId", "createdAt"]);
+        d.createObjectStore("images", { keyPath: "id" }).createIndex("by-created", "createdAt");
+        d.createObjectStore("videos", { keyPath: "id" }).createIndex("by-created", "createdAt");
+        d.createObjectStore("projects", { keyPath: "id" }).createIndex("by-updated", "updatedAt");
+        d.createObjectStore("kv");
+      }
+      if (oldVersion < 2) {
+        d.createObjectStore("agents", { keyPath: "id" }).createIndex("by-updated", "updatedAt");
+      }
     },
   });
   return dbPromise;
 }
 
 /* ---- change notifications (so the sidebar updates live) ---------------- */
-type Topic = "conversations" | "images" | "videos" | "projects" | "settings";
+type Topic = "conversations" | "images" | "videos" | "projects" | "agents" | "settings";
 const listeners = new Map<Topic, Set<() => void>>();
 export function subscribe(topic: Topic, fn: () => void) {
   if (!listeners.has(topic)) listeners.set(topic, new Set());
@@ -268,20 +291,37 @@ export async function saveSettings(s: Settings) {
   emit("settings");
 }
 
+/* ---- agents ------------------------------------------------------------ */
+export async function listAgents(): Promise<Agent[]> {
+  return (await (await db()).getAllFromIndex("agents", "by-updated")).reverse();
+}
+export async function getAgent(id: string) {
+  return (await db()).get("agents", id);
+}
+export async function putAgent(a: Agent) {
+  await (await db()).put("agents", a);
+  emit("agents");
+}
+export async function deleteAgent(id: string) {
+  await (await db()).delete("agents", id);
+  emit("agents");
+}
+
 /* ---- export / wipe ------------------------------------------------------ */
 export async function exportAll() {
   const d = await db();
-  const [conversations, messages, projects, settings] = await Promise.all([
+  const [conversations, messages, projects, agents, settings] = await Promise.all([
     d.getAll("conversations"),
     d.getAll("messages"),
     d.getAll("projects"),
+    d.getAll("agents"),
     d.get("kv", "settings"),
   ]);
-  return { exportedAt: new Date().toISOString(), conversations, messages, projects, settings };
+  return { exportedAt: new Date().toISOString(), conversations, messages, projects, agents, settings };
 }
 
 export async function wipeAll() {
   const d = await db();
-  await Promise.all((["conversations", "messages", "images", "videos", "projects", "kv"] as const).map((s) => d.clear(s)));
-  (["conversations", "images", "videos", "projects", "settings"] as const).forEach(emit);
+  await Promise.all((["conversations", "messages", "images", "videos", "projects", "agents", "kv"] as const).map((s) => d.clear(s)));
+  (["conversations", "images", "videos", "projects", "agents", "settings"] as const).forEach(emit);
 }

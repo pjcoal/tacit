@@ -1,4 +1,4 @@
-import type { ChatRequestBody, ChatStreamEvent, ReasoningLevel, WireImage, WireMessage } from "@/types/chat";
+import type { AgentPayload, ChatRequestBody, ChatStreamEvent, ReasoningLevel, WireImage, WireMessage } from "@/types/chat";
 import { sanitizePrompt } from "./sanitize";
 import type { PlaceholderMap, PrivacyMode, SanitizeResult } from "./types";
 
@@ -36,6 +36,8 @@ export interface SendOptions {
   signal?: AbortSignal;
   endpoint?: string;
   chatMode?: "chat" | "code";
+  /** Custom agent; its name and instructions go through the same filter as messages. */
+  agent?: AgentPayload;
 }
 
 export interface SendResult {
@@ -58,6 +60,14 @@ export async function sendSanitizedPrompt(opts: SendOptions): Promise<SendResult
   let sentMessage: WireMessage | null = null;
   const messages = [...opts.history];
 
+  let agent: AgentPayload | undefined;
+  if (opts.agent) {
+    const name = sanitizePrompt(opts.agent.name, opts.mode, map);
+    const instructions = sanitizePrompt(opts.agent.instructions, opts.mode, name.map);
+    map = instructions.map;
+    agent = { name: name.sanitized, instructions: instructions.sanitized };
+  }
+
   if (opts.userText !== undefined) {
     receipt = sanitizePrompt(opts.userText, opts.mode, map);
     map = receipt.map;
@@ -72,6 +82,7 @@ export async function sendSanitizedPrompt(opts: SendOptions): Promise<SendResult
     tools: opts.tools,
     privacyMode: opts.mode,
     ...(opts.chatMode ? { mode: opts.chatMode } : {}),
+    ...(agent ? { agent } : {}),
   };
 
   const res = await fetch(opts.endpoint ?? "/api/chat", {

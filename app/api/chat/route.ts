@@ -1,7 +1,7 @@
 import { getRequestAccount } from "@/server/auth/account";
 import { assertSameOrigin, enforceRateLimit, ipKey, parseJson, rateLimitHeaders, route } from "@/server/http";
 import { chatRequestSchema } from "@/server/schemas";
-import { prepareChat, runChat } from "@/server/services/chat";
+import { agentSystem, prepareChat, runChat } from "@/server/services/chat";
 import { ndjsonResponse } from "@/server/stream";
 
 export const runtime = "nodejs";
@@ -30,6 +30,7 @@ export const POST = route(async (req: Request) => {
     reasoning: body.reasoning,
     toolGroups: body.mode === "code" ? [] : body.tools,
     mode: body.mode,
+    extraSystem: body.agent && body.mode !== "code" ? agentSystem(body.agent) : undefined,
   };
   const prepared = await prepareChat(ctx, input);
 

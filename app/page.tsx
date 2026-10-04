@@ -1,3 +1,4 @@
+import { AgentsSection } from "@/components/landing/agents-section";
 import { AppShowcase } from "@/components/landing/app-showcase";
 import { CreditsSection } from "@/components/landing/credits-section";
 import { Hero } from "@/components/landing/hero";
@@ -49,6 +50,7 @@ export default function Home() {
 
         <Solutions />
         <AppShowcase />
+        <AgentsSection />
         <CodeSection />
         <PrivacyBoundary />
         <ConnectorSection />

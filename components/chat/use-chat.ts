@@ -14,6 +14,7 @@ import {
   putConversation,
   putMessage,
   uid,
+  type Agent,
   type Conversation,
   type StoredAttachment,
   type StoredMessage,
@@ -47,7 +48,7 @@ interface TurnArgs {
   signal: AbortSignal;
 }
 
-export function useChat(conversationId: string | null, onCreated: (id: string) => void) {
+export function useChat(conversationId: string | null, onCreated: (id: string) => void, agent: Agent | null = null) {
   const cfg = useConfig();
   const { connection } = useConnection();
   const { publicKey } = useWallet();
@@ -59,6 +60,11 @@ export function useChat(conversationId: string | null, onCreated: (id: string) =
   const convRef = useRef<Conversation | null>(null);
   const msgsRef = useRef<StoredMessage[]>([]);
   const skipReload = useRef<string | null>(null);
+  // Read inside async turns, so a turn always uses the agent as it is now.
+  const agentRef = useRef<Agent | null>(agent);
+  useEffect(() => {
+    agentRef.current = agent;
+  }, [agent]);
 
   const setMsgs = useCallback((fn: (prev: StoredMessage[]) => StoredMessage[]) => {
     setMessages((prev) => {
@@ -126,6 +132,7 @@ export function useChat(conversationId: string | null, onCreated: (id: string) =
         reasoning: args.reasoning,
         tools: args.tools,
         signal: args.signal,
+        agent: agentRef.current ? { name: agentRef.current.name, instructions: agentRef.current.instructions } : undefined,
       });
       map = nextMap;
       await saveConversation({ map, model: args.model, privacyMode: args.mode });
@@ -314,6 +321,7 @@ export function useChat(conversationId: string | null, onCreated: (id: string) =
           model: input.model,
           privacyMode: input.mode,
           map: createPlaceholderMap(),
+          ...(agentRef.current ? { agentId: agentRef.current.id } : {}),
         };
         convRef.current = c;
         setConversation(c);

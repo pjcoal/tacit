@@ -42,4 +42,10 @@ export const chatRequestSchema = z.object({
   tools: z.array(z.enum(["solana"])).max(4).optional(),
   privacyMode: z.enum(["smart", "strict", "off"]),
   mode: z.enum(["chat", "code"]).optional(),
+  agent: z
+    .object({
+      name: z.string().trim().min(1).max(80),
+      instructions: z.string().max(LIMITS.maxAgentInstructions),
+    })
+    .optional(),
 });

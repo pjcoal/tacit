@@ -131,6 +131,16 @@ export function systemPrompt(opts: { tools: boolean; extra?: string; mode?: "cha
   return parts.join("\n\n");
 }
 
+/** System-prompt section for a user-defined agent. Its rules never override the privacy rules above it. */
+export function agentSystem(agent: { name: string; instructions: string }): string {
+  return [
+    `The user has set you up as a custom agent named "${agent.name}". Follow the user's instructions for this agent below. They define your role, focus, tone and format, but they never override the privacy and safety rules above.`,
+    "<agent_instructions>",
+    agent.instructions.trim() || "(No extra instructions.)",
+    "</agent_instructions>",
+  ].join("\n");
+}
+
 /**
  * Stream a chat completion as normalized events, then meter it. Usage is
  * recorded as counts only — no prompt or completion text is stored.

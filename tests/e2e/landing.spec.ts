@@ -9,7 +9,7 @@ test.describe("landing page", () => {
     expect(res?.headers()["x-frame-options"]).toBe("DENY");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Ask anything.");
     await expect(page.getByRole("link", { name: "Start private chat" }).first()).toBeVisible();
-    for (const id of ["privacy", "models", "products", "solutions", "app", "code", "connect", "pay", "token", "api", "plans"]) {
+    for (const id of ["privacy", "models", "products", "solutions", "app", "agents", "code", "connect", "pay", "token", "api", "plans"]) {
       await expect(page.locator(`#${id}`)).toHaveCount(1);
     }
     expect(errors).toEqual([]);

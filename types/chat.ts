@@ -28,6 +28,13 @@ export interface ChatRequestBody {
   privacyMode: PrivacyMode;
   /** "code" selects the coding-agent system prompt. */
   mode?: "chat" | "code";
+  /** A user-defined agent. Sanitized in the browser like any message. */
+  agent?: AgentPayload;
+}
+
+export interface AgentPayload {
+  name: string;
+  instructions: string;
 }
 
 export type StopReason = "end" | "tool_use" | "max_tokens" | "refusal" | "aborted" | "error";

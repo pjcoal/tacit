@@ -15,6 +15,7 @@ export const LIMITS = {
   maxTextFilesPerMessage: 5,
   maxMessageChars: 200_000,
   maxMessages: 200,
+  maxAgentInstructions: 8000,
 };
 
 /** Detect an image type from its first bytes. */

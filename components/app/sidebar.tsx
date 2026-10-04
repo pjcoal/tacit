@@ -1,6 +1,6 @@
 "use client";
 
-import { Coins, Film, Image as ImageIcon, KeyRound, MessageSquare, Plus, Settings, Terminal, Trash2 } from "lucide-react";
+import { Bot, Coins, Film, Image as ImageIcon, KeyRound, MessageSquare, Plus, Settings, Terminal, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useConfig } from "@/components/providers/config-provider";
@@ -12,6 +12,7 @@ import { cn, timeAgo } from "@/lib/utils";
 import { useAccount } from "./account-provider";
 
 const NAV = [
+  { href: "/app/agents", label: "Agents", icon: Bot },
   { href: "/app/image", label: "Image", icon: ImageIcon },
   { href: "/app/video", label: "Video", icon: Film },
   { href: "/app/code", label: "Code", icon: Terminal },

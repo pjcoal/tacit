@@ -1,12 +1,16 @@
 "use client";
 
-import { ArrowDown, Lock } from "lucide-react";
+import { ArrowDown, Lock, ShieldCheck, Wallet } from "lucide-react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAccount } from "@/components/app/account-provider";
 import { useModels } from "@/components/app/use-models";
+import { AgentAvatar } from "@/components/agents/agent-avatar";
 import { useConfig } from "@/components/providers/config-provider";
-import { useSettings } from "@/lib/storage/hooks";
+import { PRIVACY_MODE_INFO } from "@/lib/privacy";
+import { listAgents } from "@/lib/storage/db";
+import { useLive, useSettings } from "@/lib/storage/hooks";
 import { AssistantMessage, UserMessage } from "./message";
 import { Composer, type ComposerSettings } from "./composer";
 import { useChat } from "./use-chat";
@@ -30,7 +34,14 @@ export function ChatView() {
     },
     [router],
   );
-  const chat = useChat(cid, onCreated);
+  // An agent comes from the conversation once it exists, or from ?agent= on a new chat.
+  const { value: agents, ready: agentsReady } = useLive("agents", listAgents, []);
+  const [convAgentId, setConvAgentId] = useState<string | null>(null);
+  const agentId = cid ? convAgentId : params.get("agent");
+  const agent = agentId ? (agents.find((a) => a.id === agentId) ?? null) : null;
+  const chat = useChat(cid, onCreated, agent);
+  const loadedAgentId = chat.conversation?.agentId ?? null;
+  if (cid && !chat.loading && loadedAgentId !== convAgentId) setConvAgentId(loadedAgentId);
 
   const composer = useMemo<ComposerSettings | null>(() => {
     if (!ready) return null;
@@ -38,16 +49,16 @@ export function ChatView() {
     const own = overrides.id === (conv?.id ?? null) ? overrides.v : {};
     const c: ComposerSettings = {
       model: settings.model,
-      mode: settings.privacyMode,
+      mode: agent?.privacyMode ?? settings.privacyMode,
       reasoning: settings.reasoning,
-      solana: false,
+      solana: agent?.solana ?? false,
       ...(conv ? { model: conv.model, mode: conv.privacyMode } : {}),
       ...own,
     };
     // The app always routes automatically; model choice is an API-only feature.
     c.model = "auto";
     return c;
-  }, [ready, settings, chat.conversation, overrides]);
+  }, [ready, settings, chat.conversation, overrides, agent]);
 
   const scroller = useRef<HTMLDivElement>(null);
   const [pinned, setPinned] = useState(true);
@@ -59,6 +70,7 @@ export function ChatView() {
   const visible = chat.messages.filter((m) => m.role !== "tool");
   const lastAssistant = [...visible].reverse().find((m) => m.role === "assistant");
   const noProviders = models && !models.chat.some((m) => m.available);
+  const autoModel = models?.chat.find((m) => m.id === "auto");
 
   const updateComposer = (patch: Partial<ComposerSettings>) => {
     const id = chat.conversation?.id ?? null;
@@ -80,10 +92,69 @@ export function ChatView() {
       >
         {visible.length === 0 && !chat.loading ? (
           <div className="mx-auto flex h-full max-w-[760px] flex-col justify-center px-5 pb-10">
-            <h1 className="display text-[44px] sm:text-[56px]">Build in private.</h1>
-            <p className="mt-3 flex items-center gap-1.5 text-[14px] text-ink-2">
-              <Lock size={14} /> Personal details are replaced on this device before anything is sent. History stays in this browser.
-            </p>
+            {agent ? (
+              <div data-testid="agent-intro">
+                <AgentAvatar name={agent.name} size={52} />
+                <h1 className="display mt-5 text-[40px] sm:text-[52px]">{agent.name}</h1>
+                {agent.description ? <p className="mt-2 max-w-[60ch] text-[15px] text-ink-2">{agent.description}</p> : null}
+                <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] tracking-[0.06em] text-dim uppercase">
+                  <span className="inline-flex items-center gap-1">
+                    <ShieldCheck size={12} /> {PRIVACY_MODE_INFO[agent.privacyMode].label} filter
+                  </span>
+                  {agent.solana ? (
+                    <span className="inline-flex items-center gap-1">
+                      <Wallet size={12} /> Solana connector
+                    </span>
+                  ) : null}
+                  <Link href="/app/agents" className="normal-case tracking-normal underline-offset-4 hover:text-ink hover:underline">
+                    Edit agent
+                  </Link>
+                </p>
+                {agent.starters.length && composer ? (
+                  <div className="mt-6 grid gap-2 sm:grid-cols-2">
+                    {agent.starters.map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => {
+                          setPinned(true);
+                          chat.send({
+                            text: s,
+                            images: [],
+                            textFiles: [],
+                            attachments: [],
+                            model: composer.model,
+                            mode: composer.mode,
+                            reasoning: composer.reasoning,
+                            tools: composer.solana && autoModel?.tools ? ["solana"] : [],
+                          });
+                        }}
+                        disabled={chat.streaming || !autoModel?.available}
+                        className="rounded-xl border border-line bg-surface px-4 py-3 text-left text-[14px] text-ink-2 transition-colors hover:border-ink/30 hover:text-ink disabled:opacity-50"
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            ) : agentId && agentsReady && !cid ? (
+              <div>
+                <h1 className="display text-[40px] sm:text-[52px]">Agent not found.</h1>
+                <p className="mt-3 text-[14px] text-ink-2">
+                  It may have been deleted, or it was made in another browser.{" "}
+                  <Link href="/app/agents" className="underline underline-offset-4">
+                    Your agents
+                  </Link>
+                </p>
+              </div>
+            ) : (
+              <>
+                <h1 className="display text-[44px] sm:text-[56px]">Build in private.</h1>
+                <p className="mt-3 flex items-center gap-1.5 text-[14px] text-ink-2">
+                  <Lock size={14} /> Personal details are replaced on this device before anything is sent. History stays in this browser.
+                </p>
+              </>
+            )}
             {noProviders ? (
               <p className="mt-6 rounded-xl border border-line bg-sunken px-4 py-3 text-[13.5px] text-ink-2" role="status">
                 Chat is briefly unavailable. Please check back shortly.
@@ -96,6 +167,12 @@ export function ChatView() {
           </div>
         ) : (
           <div className="mx-auto max-w-[760px] space-y-8 px-5 pt-8 pb-10">
+            {agent ? (
+              <Link href="/app/agents" className="mx-auto flex w-fit items-center gap-2 rounded-full border border-line bg-surface py-1 pr-3 pl-1 text-[12.5px] text-ink-2 hover:text-ink" data-testid="agent-chip">
+                <AgentAvatar name={agent.name} size={22} className="rounded-full" />
+                {agent.name}
+              </Link>
+            ) : null}
             {visible.map((m) =>
               m.role === "user" ? (
                 <UserMessage key={m.id} m={m} />

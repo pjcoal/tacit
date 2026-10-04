@@ -2,7 +2,7 @@
 
 import * as DM from "@radix-ui/react-dropdown-menu";
 import { AnimatePresence, m } from "framer-motion";
-import { ArrowUpRight, ChevronDown, Code2, Film, ImageIcon, KeyRound, Menu, MessageSquare, X } from "lucide-react";
+import { ArrowUpRight, Bot, ChevronDown, Code2, Film, ImageIcon, KeyRound, Menu, MessageSquare, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useConfig } from "@/components/providers/config-provider";
@@ -11,7 +11,8 @@ import { Logo } from "@/components/ui/logo";
 import { cn } from "@/lib/utils";
 
 const PRODUCTS = [
-  { href: "/app", label: "Chat", desc: "Every model, one private composer", icon: MessageSquare },
+  { href: "/app", label: "Chat", desc: "One private composer, routed by Auto", icon: MessageSquare },
+  { href: "/app/agents", label: "Agents", desc: "Build your own private assistants", icon: Bot },
   { href: "/app/image", label: "Image", desc: "Generate and keep images locally", icon: ImageIcon },
   { href: "/app/video", label: "Video", desc: "Text- and image-to-video", icon: Film },
   { href: "/app/code", label: "Code", desc: "An agent that builds and previews", icon: Code2 },
@@ -21,6 +22,7 @@ const PRODUCTS = [
 const LINKS = [
   { href: "/#solutions", label: "Solutions" },
   { href: "/#app", label: "App" },
+  { href: "/#agents", label: "Agents" },
   { href: "/#code", label: "Code" },
   { href: "/#privacy", label: "Privacy" },
   { href: "/#plans", label: "Plans" },
