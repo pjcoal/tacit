@@ -93,7 +93,7 @@ export default function Home() {
         <ApiSection />
 
         <Section id="plans">
-          <SectionHeader index="12" eyebrow="Plans" title="Every model. One private plan." lead="Start free with no account. Plans add credits and higher limits for a fixed period, paid with one wallet transaction." />
+          <SectionHeader index="12" eyebrow="Plans" title="One private plan." lead="Start free with no account. Plans add credits and higher limits for a fixed period, paid with one wallet transaction." />
           <div className="mt-12">
             <Pricing />
           </div>

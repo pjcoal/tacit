@@ -28,9 +28,10 @@ export function getPlans(): PlanConfig[] {
       durationDays: e.PLAN_DURATION_DAYS,
       perks: [
         `${e.PLAN_PRO_CREDITS.toLocaleString("en-US")} credits included`,
-        "Every configured chat, image and video model",
-        "Solana connector and coding agent",
-        "Higher rate limits",
+        "No daily message cap while you have credits",
+        "Chat and the coding agent",
+        "API access using the same credits",
+        "Higher rate limits than the free tier",
       ],
     },
     {
@@ -42,8 +43,7 @@ export function getPlans(): PlanConfig[] {
       perks: [
         `${e.PLAN_MAX_CREDITS.toLocaleString("en-US")} credits included`,
         "Everything in Pro",
-        "Highest rate limits and attachment sizes",
-        "API access with the same credit pool",
+        "More credits per dollar than Pro",
       ],
     },
   ];

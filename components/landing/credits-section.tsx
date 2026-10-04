@@ -29,7 +29,7 @@ export function CreditsSection() {
   const bonusPct = cfg.payments.tokenBonusBps / 100;
 
   const steps = [
-    { icon: Sparkles, title: "Choose an amount", body: "Pay in SOL, USDC or $" + cfg.token.symbol + ". We quote the exact amount." },
+    { icon: Sparkles, title: "Choose an amount", body: `Pay in SOL or USDC${cfg.token.mint ? ` or $${cfg.token.symbol}` : ""}. We quote the exact amount.` },
     { icon: PenLine, title: "Approve in your wallet", body: "One transfer to the treasury. Nothing is signed for you." },
     { icon: ShieldCheck, title: "Verified on-chain", body: "Our server checks the transaction itself before any credits are issued." },
   ];
