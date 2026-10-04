@@ -33,12 +33,11 @@ test.describe("landing page", () => {
     await expect(page.getByText("A Solana connector that can't spend.")).toBeVisible();
   });
 
-  test("model availability reflects configuration", async ({ page }) => {
+  test("the models section never names a model", async ({ page }) => {
     await page.goto("/#models");
-    await expect(page.locator("#models").getByText("Local Echo (fixture)")).toBeVisible();
-    // Only live models are listed; nothing "not configured" is shown to visitors.
-    await expect(page.locator("#models")).not.toContainText("not configured");
-    await expect(page.locator("#models")).not.toContainText("GPT-5");
+    const section = page.locator("#models");
+    await expect(section).toContainText("One quiet route");
+    for (const name of ["Local Echo", "Gemini", "GPT", "Claude", "not configured"]) await expect(section).not.toContainText(name);
   });
 
   test("token section links are derived from the mint and buyback is labelled planned", async ({ page }) => {
