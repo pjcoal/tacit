@@ -35,6 +35,8 @@ export function TokenSection() {
   const [copied, setCopied] = useState(false);
   const [buyOpen, setBuyOpen] = useState(false);
   const mint = cfg.token.mint;
+  // Published before launch so people can verify it; trading features wait for the mint to exist.
+  const ca = mint ?? cfg.token.contractAddress;
   const sym = `$${cfg.token.symbol}`;
   const burnPct = cfg.payments.burnDiscountBps / 100;
   const buybackLive = cfg.token.buybackStatus === "active";
@@ -77,27 +79,28 @@ export function TokenSection() {
     { label: "Network", value: `Solana · ${cfg.network === "mainnet-beta" ? "mainnet" : cfg.network}` },
     { label: "Standard", value: info?.onChain?.standard ?? "SPL · Token-2022" },
     {
-      label: "Mint",
+      label: mint ? "Mint" : "Contract address",
       wide: true,
-      value: mint ? (
+      value: ca ? (
         <button
           onClick={() =>
-            navigator.clipboard.writeText(mint).then(() => {
+            navigator.clipboard.writeText(ca).then(() => {
               setCopied(true);
               setTimeout(() => setCopied(false), 1500);
             })
           }
           className="group inline-flex max-w-full items-center gap-2 text-left font-mono text-[12.5px] break-all hover:text-white"
-          aria-label="Copy mint address"
+          aria-label="Copy contract address"
+          data-testid="token-ca"
         >
-          <span className="underline decoration-white/20 underline-offset-4">{mint}</span>
+          <span className="underline decoration-white/20 underline-offset-4">{ca}</span>
           {copied ? <Check size={13} className="shrink-0" /> : <Copy size={13} className="shrink-0 opacity-50 group-hover:opacity-100" />}
         </button>
       ) : (
         <span className="text-panel-dim">Published here at launch</span>
       ),
     },
-    { label: "Trading", value: trading },
+    { label: "Trading", value: mint ? trading : "Not trading yet" },
     ...(info?.priceUsd != null ? [{ label: "Price", value: formatUsd(info.priceUsd) }] : []),
     ...(info?.marketCapUsd != null ? [{ label: "Market cap", value: formatCompactUsd(info.marketCapUsd) }] : []),
   ];
@@ -137,6 +140,12 @@ export function TokenSection() {
                 </a>
               ) : null}
             </div>
+            {!mint && ca ? (
+              <p className="mt-4 max-w-full text-[13px] text-panel-dim">
+                CA <span className="font-mono break-all text-white">{ca}</span>
+                <span className="block text-[12px]">Not trading yet. Only trust this address, and only once it&apos;s live.</span>
+              </p>
+            ) : null}
             {cfg.token.links ? (
               <div className="mt-4 flex gap-5 text-[13px] text-panel-dim">
                 <a href={cfg.token.links.pump} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-white">

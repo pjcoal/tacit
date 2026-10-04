@@ -38,7 +38,7 @@ export default defineConfig({
           { id: "local-echo", label: "Local Echo (fixture)", family: "Local", provider: "custom", upstream: "echo", tools: true, free: true, tier: "fast", priceIn: 1, priceOut: 2 },
         ]),
         TREASURY_WALLET: "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
-        PROJECT_TOKEN_MINT: "So11111111111111111111111111111111111111112",
+        PROJECT_TOKEN_MINT: process.env.E2E_TOKEN_MINT ?? "So11111111111111111111111111111111111111112",
         SOLANA_NETWORK: "devnet",
         FREE_DAILY_MESSAGES: "200",
       },

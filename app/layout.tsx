@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { ConfigProvider } from "@/components/providers/config-provider";
 import { MotionProvider } from "@/components/providers/motion-provider";
 import { getPublicConfig } from "@/server/public-config";
+import { refreshTokenLive } from "@/server/services/token-live";
 import "./globals.css";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "swap" });
@@ -38,6 +39,7 @@ const THEME_SCRIPT = `try{var t=localStorage.getItem("tacit:theme");if(t==="ligh
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const nonce = (await headers()).get("x-nonce") ?? undefined;
+  await refreshTokenLive();
   const config = getPublicConfig();
   return (
     <html lang="en" className={`${geist.variable} ${geistMono.variable} ${instrument.variable} ${instrumentItalic.variable}`} suppressHydrationWarning>

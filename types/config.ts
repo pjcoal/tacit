@@ -20,7 +20,10 @@ export interface PublicConfig {
   /** When set the browser talks to this RPC directly; otherwise it uses the allow-listed /api/solana/rpc proxy. */
   publicRpcUrl: string | null;
   token: {
+    /** Set once the mint exists on-chain; everything token-related keys off this. */
     mint: string | null;
+    /** The published contract address, shown before launch too. */
+    contractAddress: string | null;
     symbol: string;
     name: string;
     decimals: number;

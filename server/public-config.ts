@@ -1,6 +1,7 @@
 import "server-only";
 import { env } from "@/server/env";
 import { tokenLinks } from "@/lib/solana/links";
+import { isTokenLive } from "./services/token-live";
 import type { PlanConfig, PublicConfig } from "@/types/config";
 import { isDatabaseConfigured } from "@/server/db/client";
 
@@ -51,7 +52,7 @@ export function getPlans(): PlanConfig[] {
 
 export function getPublicConfig(): PublicConfig {
   const e = env();
-  const mint = e.PROJECT_TOKEN_MINT ?? null;
+  const mint = isTokenLive() ? (e.PROJECT_TOKEN_MINT ?? null) : null;
 
   let disabledReason: string | null = null;
   if (!e.TREASURY_WALLET) disabledReason = "Treasury wallet not configured";
@@ -67,6 +68,7 @@ export function getPublicConfig(): PublicConfig {
       symbol: e.PROJECT_TOKEN_SYMBOL,
       name: e.PROJECT_TOKEN_NAME,
       decimals: e.PROJECT_TOKEN_DECIMALS,
+      contractAddress: e.PROJECT_TOKEN_MINT ?? null,
       links: mint ? tokenLinks(mint, e.SOLANA_NETWORK, e.PUMP_URL) : null,
       buybackStatus: e.TOKEN_BUYBACK_STATUS,
     },
