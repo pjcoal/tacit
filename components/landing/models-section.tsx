@@ -11,9 +11,9 @@ export function ModelsSection() {
           eyebrow="Auto"
           title={
             <>
-              Paste the real thing.
+              Paste anything.
               <br />
-              <span className="text-ink-2">Only placeholders leave.</span>
+              <span className="text-ink-2">Share nothing.</span>
             </>
           }
           lead="Logs, keys, customer emails, wallet addresses: paste them as they are. Veil swaps each one for a placeholder before anything leaves your device, Auto routes the request to the right model for the job, and the real values come back only on your screen."
