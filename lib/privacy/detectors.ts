@@ -151,8 +151,27 @@ export function detectSecrets(text: string): DetectedEntity[] {
     /\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}/g,
     /\bAIza[0-9A-Za-z_-]{35}\b/g,
     /\br8_[A-Za-z0-9]{30,}\b/g,
+    /\b(?:sk|rk)_(?:live|test)_[A-Za-z0-9]{16,}\b/g, // Stripe
+    /\bwhsec_[A-Za-z0-9+/=]{20,}/g, // webhook signing secrets
+    /\bnpm_[A-Za-z0-9]{36}\b/g,
+    /\bhf_[A-Za-z0-9]{30,}\b/g,
+    /\bSG\.[A-Za-z0-9_-]{16,}\.[A-Za-z0-9_-]{16,}/g, // SendGrid
+    /\bGOCSPX-[A-Za-z0-9_-]{20,}/g, // Google OAuth client secret
+    /\bsb_secret_[A-Za-z0-9_-]{20,}/g, // Supabase
+    /\bveil_(?:sk|acct)_[A-Za-z0-9_-]{43}\b/g, // our own API and account keys
   ];
   for (const re of tokenPatterns) each(re, text, (m) => push(ctx, "SECRET", m.index, m.index + m[0].length, P));
+
+  // .env-style assignments: STRIPE_SECRET=…, API_KEY: "…". Only the value is replaced.
+  each(/\b[A-Z][A-Z0-9_]*(?:SECRET|TOKEN|PASSWORD|PASSWD|API_KEY|PRIVATE_KEY)[A-Z0-9_]*\s*[=:]\s*["']?([^\s"'`]{8,})/g, text, (m) => {
+    const s = groupStart(m, 1);
+    push(ctx, "SECRET", s, s + m[1].length, P);
+  });
+  // Passwords inside database / broker connection strings.
+  each(/\b(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?|rediss?|amqps?):\/\/[^\s:@/]+:([^\s@/]+)@/g, text, (m) => {
+    const s = groupStart(m, 1);
+    push(ctx, "SECRET", s, s + m[1].length, P);
+  });
 
   // Solana keypair file: a JSON array of 64 bytes.
   each(/\[\s*(?:\d{1,3}\s*,\s*){63}\d{1,3}\s*\]/g, text, (m) =>
@@ -463,7 +482,8 @@ function detectStrictCatchAll(ctx: Ctx) {
   each(/\b\d{1,3}(?:[,.]\d{3})+(?:\.\d+)?\b|\b\d{3,}(?:\.\d+)?\b/g, text, (m) => {
     if (!inCode(ctx, m.index)) push(ctx, "NUM", m.index, m.index + m[0].length, 20);
   });
-  each(new RegExp(`(?<![\\p{L}])${CAP_SEQ(4)}(?![\\p{L}])`, "gu"), text, (m) => {
+  // Words glued to identifiers or file names (STRIPE_SECRET_KEY, Next.js) are code, not names.
+  each(new RegExp(`(?<![\\p{L}\\p{N}_./-])${CAP_SEQ(4)}(?![\\p{L}\\p{N}_]|\\.\\p{L})`, "gu"), text, (m) => {
     if (inCode(ctx, m.index)) return;
     const words = [...m[0].matchAll(/\S+/g)].map((w) => ({ word: w[0], start: m.index + w.index! }));
     // Sentence-initial capitalization carries no signal; nor do function words ("The", "Dr").

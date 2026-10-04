@@ -55,6 +55,21 @@ describe("sanitizePrompt", () => {
     expect(sanitizePrompt("key sk-ant-api03-abcdefghijklmnopqrstuvwxyz0123", "off").sanitized).toBe("key [SECRET_1]");
   });
 
+  it("catches the secrets builders paste: service keys, .env lines, connection strings", () => {
+    for (const mode of ["smart", "strict", "off"] as const) {
+      const s = (t: string) => sanitizePrompt(t, mode).sanitized;
+      expect(s("Use sk_live_51HxQ2LmX8vT4rB7nK1pZ6wY3cDe for Stripe")).toBe("Use [SECRET_1] for Stripe".replace("Stripe", mode === "strict" ? "[NAME_1]" : "Stripe"));
+      expect(s("whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLGpw")).toBe("[SECRET_1]");
+      expect(s("hf_AbCdEfGhIjKlMnOpQrStUvWxYz01234567")).toBe("[SECRET_1]");
+      expect(s("STRIPE_SECRET_KEY=abc123def456ghi")).toBe("STRIPE_SECRET_KEY=[SECRET_1]");
+      expect(s('db password: DATABASE_PASSWORD: "hunter2hunter2"')).toContain("[SECRET_1]");
+      expect(s("postgres://app:s3cr3t-pa55@db.internal:5432/main")).toContain("postgres://app:[SECRET_1]@db.internal:");
+      expect(s(`veil_sk_${"A".repeat(43)}`)).toBe("[SECRET_1]");
+    }
+    // Ordinary env names without a value-like secret are left alone.
+    expect(sanitizePrompt("set NODE_ENV=production", "off").sanitized).toBe("set NODE_ENV=production");
+  });
+
   it("off mode leaves ordinary personal data untouched", () => {
     const r = sanitizePrompt("Find restaurants near my home in Dublin and send the result to Alice.", "off");
     expect(r.sanitized).toBe("Find restaurants near my home in Dublin and send the result to Alice.");

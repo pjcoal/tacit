@@ -9,6 +9,9 @@ import { Segmented } from "@/components/ui/segmented";
 import { PRIVACY_MODE_INFO, restoreResponse, sanitizePrompt, type PrivacyMode } from "@/lib/privacy";
 import { cn } from "@/lib/utils";
 
+/** First placeholder of a given type, e.g. pick(p, "EMAIL") → "[EMAIL_1]". */
+const pick = (p: string[], type: string) => p.find((x) => x.startsWith(`[${type}_`));
+
 const PRESETS = [
   {
     id: "dinner",
@@ -23,16 +26,18 @@ const PRESETS = [
     reply: (p: string[]) => `I've prepared a 2 SOL transfer to ${p[0] ?? "that address"} for you to review in your wallet, plus a note for ${p[1] ?? "them"} about the ${p[2] ?? ""} trip.`,
   },
   {
-    id: "health",
-    label: "Health",
-    text: "My son Oisín was born on 14 March 2016 and has asthma. Dr. Byrne at Beaumont Hospital suggested a new inhaler. What should I ask?",
-    reply: (p: string[]) => `Good questions for ${p.find((x) => x.startsWith("[PERSON")) ?? "the doctor"}: how the new inhaler differs, the right spacer for a child, and what to do if symptoms flare at night.`,
+    id: "deploy",
+    label: "Deploy",
+    text: "Write a deploy script for Kestrel. The server is at 84.203.17.9 and the API key is sk-proj-9fQ2LmX8vT4rB7nK1pZ6wY3cAbCd. Ping Tom when it's done.",
+    reply: (p: string[]) =>
+      `Here's the deploy script for ${pick(p, "NAME") ?? "Kestrel"}. It connects to ${pick(p, "IP") ?? "your server"}, reads the API key from an environment variable instead of hard-coding it, and messages ${pick(p, "PERSON") ?? "the team"} at the end.`,
   },
   {
     id: "email",
     label: "Email",
-    text: "Draft a reply to james.whelan@acme.ie saying I can meet Thursday at 3pm. If it's easier, call me on 087 123 4567.",
-    reply: (p: string[]) => `Here's a draft for ${p[0] ?? "them"}: "Thursday at 3pm works for me. If it's easier, call me on ${p[1] ?? "my mobile"}."`,
+    text: "Draft a reply to james.whelan@acme.ie saying I can meet Thursday at 3pm about the Halcyon launch. If it's easier, call me on 087 123 4567.",
+    reply: (p: string[]) =>
+      `Here's a draft for ${pick(p, "EMAIL") ?? "them"}: "Thursday at 3pm works for me to go over the ${pick(p, "NAME") ?? "Halcyon"} launch. If it's easier, call me on ${pick(p, "PHONE") ?? "my mobile"}."`,
   },
 ];
 
