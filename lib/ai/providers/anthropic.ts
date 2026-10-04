@@ -146,9 +146,16 @@ export const anthropicProvider: ChatProvider = {
         yield { type: "done", stopReason: "aborted" };
         return;
       }
+      // Provider details go to server logs only; users get a message about *this* service.
+      if (err instanceof Anthropic.APIError) console.error("[anthropic]", err.status, err.message);
       if (err instanceof Anthropic.RateLimitError) throw new ProviderError("The model provider is rate limiting requests. Try again shortly.", 429, "provider_rate_limited");
-      if (err instanceof Anthropic.AuthenticationError) throw new ProviderError("Provider authentication failed.", 503, "provider_auth");
-      if (err instanceof Anthropic.BadRequestError) throw new ProviderError(`Provider rejected the request: ${err.message}`, 400, "provider_bad_request");
+      if (err instanceof Anthropic.AuthenticationError || err instanceof Anthropic.PermissionDeniedError) {
+        throw new ProviderError(`${req.model.label} is temporarily unavailable.`, 503, "provider_unavailable");
+      }
+      if (err instanceof Anthropic.BadRequestError) {
+        if (/credit balance|billing/i.test(err.message)) throw new ProviderError(`${req.model.label} is temporarily unavailable. Try another model.`, 503, "provider_unavailable");
+        throw new ProviderError("The model rejected this request. Try rephrasing or shortening it.", 400, "provider_bad_request");
+      }
       if (err instanceof Anthropic.APIError) throw new ProviderError(`Provider error (${err.status ?? "network"})`, 502);
       throw err;
     }

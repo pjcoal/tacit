@@ -53,7 +53,8 @@ export const googleProvider: ChatProvider = {
     }
     if (!res.ok || !res.body) {
       const text = await res.text().catch(() => "");
-      throw new ProviderError(`Google returned ${res.status}${text ? `: ${text.slice(0, 300)}` : ""}`, res.status === 429 ? 429 : 502);
+      console.error("[google]", res.status, text.slice(0, 500));
+      throw new ProviderError(res.status === 429 ? "The model provider is rate limiting requests. Try again shortly." : `${req.model.label} is temporarily unavailable. Try another model.`, res.status === 429 ? 429 : 503, "provider_unavailable");
     }
 
     let usage = { inputTokens: 0, outputTokens: 0 };

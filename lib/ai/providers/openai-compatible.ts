@@ -122,8 +122,12 @@ export function createCompatProvider(provider: CompatProvider): ChatProvider {
       }
       if (!res.ok || !res.body) {
         const text = await res.text().catch(() => "");
-        const status = res.status === 429 ? 429 : res.status >= 500 ? 502 : 400;
-        throw new ProviderError(`${provider} returned ${res.status}${text ? `: ${text.slice(0, 300)}` : ""}`, status);
+        console.error(`[${provider}]`, res.status, text.slice(0, 500));
+        if (res.status === 429) throw new ProviderError("The model provider is rate limiting requests. Try again shortly.", 429, "provider_rate_limited");
+        if (res.status === 401 || res.status === 402 || res.status === 403 || res.status >= 500) {
+          throw new ProviderError(`${req.model.label} is temporarily unavailable. Try another model.`, 503, "provider_unavailable");
+        }
+        throw new ProviderError("The model rejected this request. Try rephrasing or shortening it.", 400, "provider_bad_request");
       }
 
       const toolAcc = new Map<number, { id: string; name: string; args: string }>();
