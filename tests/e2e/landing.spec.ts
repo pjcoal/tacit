@@ -36,7 +36,9 @@ test.describe("landing page", () => {
   test("model availability reflects configuration", async ({ page }) => {
     await page.goto("/#models");
     await expect(page.locator("#models").getByText("Local Echo (fixture)")).toBeVisible();
-    await expect(page.locator("#models").getByText("Provider not configured")).toBeVisible();
+    // Only live models are listed; nothing "not configured" is shown to visitors.
+    await expect(page.locator("#models")).not.toContainText("not configured");
+    await expect(page.locator("#models")).not.toContainText("GPT-5");
   });
 
   test("token section links are derived from the mint and buyback is labelled planned", async ({ page }) => {

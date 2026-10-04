@@ -145,10 +145,9 @@ export function VideoStudio() {
           </div>
           <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-line-2 pt-4">
             <select value={model?.id ?? ""} onChange={(e) => setModelId(e.target.value)} aria-label="Video model" className="h-8 rounded-full border border-line bg-surface px-3 text-[12.5px] outline-none">
-              {videoModels.map((m) => (
-                <option key={m.id} value={m.id} disabled={!m.available}>
+              {videoModels.filter((m) => m.available).map((m) => (
+                <option key={m.id} value={m.id}>
                   {m.label}
-                  {m.available ? "" : ` — ${m.providerLabel} not configured`}
                 </option>
               ))}
             </select>
@@ -168,7 +167,7 @@ export function VideoStudio() {
               Video uses credits. <Link href="/app/credits" className="underline">Add credits</Link>.
             </p>
           ) : null}
-          {models && !videoModels.some((m) => m.available) ? <p className="mt-2 text-[12.5px] text-amber">No video provider is configured on this deployment (set REPLICATE_API_TOKEN).</p> : null}
+          {models && !videoModels.some((m) => m.available) ? <p className="mt-3 text-[12.5px] text-dim">Video generation is coming soon.</p> : null}
           {err ? <p className="mt-3 text-[13px] text-danger">{err}</p> : null}
         </div>
 

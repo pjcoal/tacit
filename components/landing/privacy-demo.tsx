@@ -13,7 +13,7 @@ const PRESETS = [
   {
     id: "dinner",
     label: "Restaurants",
-    text: "Find restaurants near my home in Dublin and send the result to Alice.",
+    text: "Find restaurants near my home in Lisbon and send the shortlist to Elena.",
     reply: (p: string[]) => `Here are four places within walking distance in ${p[0] ?? "the area"}. I've drafted a short note for ${p[1] ?? "them"} with the shortlist.`,
   },
   {

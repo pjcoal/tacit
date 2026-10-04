@@ -107,10 +107,9 @@ export function ImageStudio() {
               aria-label="Image model"
               className="h-8 rounded-full border border-line bg-surface px-3 text-[12.5px] outline-none"
             >
-              {imageModels.map((m) => (
-                <option key={m.id} value={m.id} disabled={!m.available}>
+              {imageModels.filter((m) => m.available).map((m) => (
+                <option key={m.id} value={m.id}>
                   {m.label}
-                  {m.available ? "" : ` — ${m.providerLabel} not configured`}
                 </option>
               ))}
             </select>
@@ -128,7 +127,7 @@ export function ImageStudio() {
               Image generation uses credits. <Link href="/app/credits" className="underline">Create an account and add credits</Link>.
             </p>
           ) : null}
-          {models && !imageModels.some((m) => m.available) ? <p className="mt-3 text-[12.5px] text-amber">No image provider is configured on this deployment.</p> : null}
+          {models && !imageModels.some((m) => m.available) ? <p className="mt-3 text-[12.5px] text-dim">Image generation is coming soon.</p> : null}
           {err ? <p className="mt-3 text-[13px] text-danger">{err}</p> : null}
         </div>
 

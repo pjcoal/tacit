@@ -64,7 +64,7 @@ export function CreditsPage() {
 
         {!cfg.payments.enabled ? (
           <p className="mb-6 rounded-xl border border-amber/30 bg-amber-soft px-4 py-3 text-[13.5px]" role="status">
-            Payments are not configured on this deployment: {cfg.payments.disabledReason}.
+            Wallet payments are opening soon. Free chat works in the meantime — no account needed.
           </p>
         ) : null}
 

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CopyButton, Markdown } from "@/components/chat/markdown";
 import { Segmented } from "@/components/ui/segmented";
-import { localBrowserSandbox, parseAgentFiles, remoteSandbox } from "@/lib/code/sandbox";
+import { localBrowserSandbox, parseAgentFiles } from "@/lib/code/sandbox";
 import { createPlaceholderMap, restorePartial, restoreResponse, sendSanitizedPrompt } from "@/lib/privacy";
 import { deleteProject, getProject, listProjects, putProject, uid, type CodeProject } from "@/lib/storage/db";
 import { useLive } from "@/lib/storage/hooks";
@@ -187,7 +187,7 @@ export function CodeAgent() {
           <div className="text-[13.5px] text-ink-2">
             <p className="font-medium text-ink">Describe a small web app.</p>
             <p className="mt-1">Examples: “a pomodoro timer with keyboard shortcuts”, “a tip calculator with a dark theme”, “a canvas particle toy that follows the mouse”.</p>
-            <p className="mt-3 text-[12px] text-dim">Runs as static HTML/CSS/JS in a sandbox with no network access. {remoteSandbox.label}: not configured.</p>
+            <p className="mt-3 text-[12px] text-dim">Runs as static HTML/CSS/JS in a private sandbox with no network access.</p>
           </div>
         ) : null}
         {project?.messages.map((m) =>

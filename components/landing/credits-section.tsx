@@ -41,7 +41,7 @@ export function CreditsSection() {
         <div className="relative">
           <div className="flex items-center justify-between">
             <span className="eyebrow">Credit balance preview</span>
-            {!cfg.payments.enabled ? <Badge tone="amber">{cfg.payments.disabledReason}</Badge> : null}
+            {!cfg.payments.enabled ? <Badge tone="neutral">Opening soon</Badge> : null}
           </div>
           <div className="mt-6 flex items-end gap-3">
             <span className="display text-[64px] sm:text-[84px]">

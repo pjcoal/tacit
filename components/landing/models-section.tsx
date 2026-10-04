@@ -1,16 +1,15 @@
 import { Shuffle } from "lucide-react";
-import { Badge, StatusDot } from "@/components/ui/badge";
+import { StatusDot } from "@/components/ui/badge";
 import { Reveal } from "@/components/ui/reveal";
 import { Section, SectionHeader } from "@/components/ui/section";
 import { publicChatModels } from "@/lib/ai/registry";
 import { env } from "@/server/env";
 
-/** Availability comes from this deployment's configured provider keys — nothing is implied that isn't wired up. */
+/** Lists only the models that are live on this deployment — the ones Auto can route to. */
 export function ModelsSection() {
   const e = env();
-  const models = publicChatModels(e.CREDITS_PER_USD, e.PRICE_MARKUP_BPS).filter((m) => m.id !== "auto");
-  const families = [...new Set(models.map((m) => m.family))];
-  const anyAvailable = models.some((m) => m.available);
+  const live = publicChatModels(e.CREDITS_PER_USD, e.PRICE_MARKUP_BPS).filter((m) => m.id !== "auto" && m.available);
+  const families = [...new Set(live.map((m) => m.family))];
 
   return (
     <Section id="models">
@@ -20,56 +19,51 @@ export function ModelsSection() {
           eyebrow="Models"
           title={
             <>
-              Many models.
+              One question.
               <br />
-              One private layer.
+              The right model.
             </>
           }
           lead={
             <>
-              Pick a model or let <span className="font-medium text-ink">Auto</span> route by task. Every request — whichever
-              provider answers it — passes through the same filter, the same receipts and the same local history.
+              You don&apos;t pick a model — <span className="font-medium text-ink">Auto</span> does, based on how long and complex your
+              request is and whether it includes images. Whichever model answers, the request passes through the same filter, the same
+              receipts and the same local history.
             </>
           }
         />
         <Reveal delay={0.1} className="card overflow-hidden">
-          <div className="flex items-center justify-between border-b border-line px-5 py-3.5">
-            <span className="flex items-center gap-2 text-[14px] font-medium">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-4">
+            <span className="flex items-center gap-2 text-[15px] font-medium">
               <Shuffle size={15} className="text-dim" /> Auto
             </span>
-            <span className="text-[12.5px] text-dim">Routes to a configured model by prompt size, images and tools</span>
+            <span className="text-[12.5px] text-dim">Routes each request by size, images and complexity</span>
           </div>
-          <ul className="divide-y divide-line-2">
-            {families.map((f) => {
-              const fm = models.filter((m) => m.family === f);
-              return (
-                <li key={f} className="grid grid-cols-[110px_1fr] gap-4 px-5 py-3.5 sm:grid-cols-[140px_1fr]">
-                  <span className="flex items-center gap-2.5 text-[14px] font-medium">
-                    <span className="grid h-6 w-6 place-items-center rounded-md border border-line bg-bg font-serif text-[14px]">{f[0]}</span>
-                    {f}
-                  </span>
-                  <span className="flex flex-wrap gap-x-4 gap-y-1.5">
-                    {fm.map((m) => (
-                      <span key={m.id} className="inline-flex items-center gap-1.5 text-[13px] text-ink-2" title={m.available ? `${m.label} via ${m.providerLabel}` : m.unavailableReason ?? undefined}>
-                        <StatusDot tone={m.available ? "mint" : "dim"} />
-                        <span className={m.available ? "" : "text-dim"}>{m.label}</span>
-                        {m.free ? <span className="font-mono text-[10px] uppercase text-dim">free</span> : null}
-                      </span>
-                    ))}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-line bg-sunken px-5 py-3 text-[12px] text-dim">
-            <span className="inline-flex items-center gap-1.5">
-              <StatusDot tone="mint" /> Available on this deployment
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <StatusDot tone="dim" /> Provider not configured
-            </span>
-            {!anyAvailable ? <Badge tone="amber">Setup required</Badge> : null}
-          </div>
+          {families.length ? (
+            <>
+              <p className="eyebrow px-5 pt-4">Currently routing to</p>
+              <ul className="divide-y divide-line-2">
+                {families.map((f) => (
+                  <li key={f} className="grid grid-cols-[110px_1fr] gap-4 px-5 py-3.5 sm:grid-cols-[140px_1fr]">
+                    <span className="flex items-center gap-2.5 text-[14px] font-medium">
+                      <span className="grid h-6 w-6 place-items-center rounded-md border border-line bg-bg font-serif text-[14px]">{f[0]}</span>
+                      {f}
+                    </span>
+                    <span className="flex flex-wrap gap-x-4 gap-y-1.5">
+                      {live
+                        .filter((m) => m.family === f)
+                        .map((m) => (
+                          <span key={m.id} className="inline-flex items-center gap-1.5 text-[13px] text-ink-2">
+                            <StatusDot tone="mint" /> {m.label}
+                          </span>
+                        ))}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+          <p className="border-t border-line bg-sunken px-5 py-3 text-[12px] text-dim">More model families are added to Auto as they come online.</p>
         </Reveal>
       </div>
     </Section>

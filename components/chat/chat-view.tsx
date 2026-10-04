@@ -93,8 +93,8 @@ export function ChatView() {
               <Lock size={14} /> Personal details are replaced on this device before anything is sent. History stays in this browser.
             </p>
             {noProviders ? (
-              <p className="mt-6 rounded-xl border border-amber/30 bg-amber-soft px-4 py-3 text-[13.5px] text-ink-2" role="status">
-                No model providers are configured on this deployment yet. Add a provider key (e.g. ANTHROPIC_API_KEY) to the server environment to enable chat.
+              <p className="mt-6 rounded-xl border border-line bg-sunken px-4 py-3 text-[13.5px] text-ink-2" role="status">
+                Chat is briefly unavailable. Please check back shortly.
               </p>
             ) : null}
             {modelsError ? <p className="mt-6 text-[13.5px] text-danger">{modelsError}</p> : null}
