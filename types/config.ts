@@ -1,7 +1,7 @@
 import type { SolanaNetwork, TokenLinks } from "@/lib/solana/links";
 
 export type PlanId = "free" | "pro" | "max";
-export type PayCurrency = "SOL" | "USDC" | "TOKEN";
+export type PayCurrency = "SOL" | "USDC" | "TOKEN" | "BURN";
 
 export interface PlanConfig {
   id: PlanId;
@@ -34,6 +34,8 @@ export interface PublicConfig {
     creditsPerUsd: number;
     tokenBonusBps: number;
     tokenPlanDiscountBps: number;
+    /** Burning the token for credits is this much cheaper than paying in USDC. */
+    burnDiscountBps: number;
     packagesUsd: number[];
   };
   plans: PlanConfig[];

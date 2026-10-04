@@ -73,10 +73,11 @@ export function getPublicConfig(): PublicConfig {
     payments: {
       enabled: disabledReason === null,
       disabledReason,
-      currencies: { SOL: true, USDC: true, TOKEN: Boolean(mint) },
+      currencies: { SOL: true, USDC: true, TOKEN: Boolean(mint), BURN: Boolean(mint) },
       creditsPerUsd: e.CREDITS_PER_USD,
       tokenBonusBps: e.TOKEN_CREDIT_BONUS_BPS,
       tokenPlanDiscountBps: e.TOKEN_PLAN_DISCOUNT_BPS,
+      burnDiscountBps: e.TOKEN_BURN_DISCOUNT_BPS,
       packagesUsd: e.CREDIT_PACKAGES_USD,
     },
     plans: getPlans(),

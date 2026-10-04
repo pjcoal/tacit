@@ -56,7 +56,8 @@ export function PurchaseDialog({ product, onClose }: { product: Product | null; 
     return () => clearInterval(t);
   }, [phase]);
 
-  const symbol = product?.currency === "TOKEN" ? `$${cfg.token.symbol}` : product?.currency;
+  const burning = product?.currency === "BURN";
+  const symbol = product?.currency === "TOKEN" || burning ? `$${cfg.token.symbol}` : product?.currency;
   const secondsLeft = intent ? Math.max(0, Math.floor((new Date(intent.expiresAt).getTime() - now) / 1000)) : 0;
 
   async function quote() {
@@ -139,7 +140,7 @@ export function PurchaseDialog({ product, onClose }: { product: Product | null; 
             {intent ? (
               <dl className="space-y-2 rounded-xl border border-line p-4 text-[14px]">
                 <div className="flex justify-between">
-                  <dt className="text-dim">You pay</dt>
+                  <dt className="text-dim">{burning ? "You burn" : "You pay"}</dt>
                   <dd className="font-medium tabular-nums">
                     {formatBaseUnits(BigInt(intent.amountBaseUnits), intent.decimals, 6)} {symbol}
                   </dd>
@@ -153,7 +154,7 @@ export function PurchaseDialog({ product, onClose }: { product: Product | null; 
                   <dd className="tabular-nums">{intent.credits.toLocaleString("en-US")} credits</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-dim">To (treasury)</dt>
+                  <dt className="text-dim">{burning ? "Burned from" : "To (treasury)"}</dt>
                   <dd className="font-mono text-[12.5px]">{shortAddress(intent.destination, 6)}</dd>
                 </div>
                 <div className="flex justify-between">
@@ -161,7 +162,14 @@ export function PurchaseDialog({ product, onClose }: { product: Product | null; 
                   <dd className={secondsLeft < 30 ? "text-danger" : ""}>{phase === "quoted" ? `${Math.floor(secondsLeft / 60)}:${String(secondsLeft % 60).padStart(2, "0")}` : "—"}</dd>
                 </div>
               </dl>
-            ) : (
+            ) : null}
+            {burning ? (
+              <p className="mt-3 flex items-start gap-2 rounded-lg bg-amber-soft px-3 py-2 text-[12.5px] text-ink-2">
+                <AlertTriangle size={14} className="mt-0.5 shrink-0 text-amber" />
+                These tokens are destroyed permanently by an on-chain burn from your own wallet. Nobody receives them and it can&apos;t be undone.
+              </p>
+            ) : null}
+            {intent ? null : (
               <p className="rounded-xl border border-line bg-sunken px-4 py-3 text-[13.5px] text-ink-2">
                 We&apos;ll quote the exact {symbol} amount at the current price. The quote is valid for a few minutes.
               </p>

@@ -1,7 +1,7 @@
 import "server-only";
 import { createBurnCheckedInstruction, getAssociatedTokenAddressSync, getMint } from "@solana/spl-token";
 import { ComputeBudgetProgram, PublicKey, Transaction } from "@solana/web3.js";
-import { and, desc, eq, gte, lt, sql } from "drizzle-orm";
+import { and, desc, eq, gte, lt, ne, sql } from "drizzle-orm";
 import { getVerifiedConnection } from "@/lib/solana/connection";
 import { getSolUsdPrice } from "@/lib/solana/price";
 import { prepareBuyTransaction } from "@/lib/solana/pump";
@@ -21,7 +21,8 @@ export async function revenueBetween(db: Db, start: Date, end: Date) {
   const [g] = await db
     .select({ total: sql<string>`coalesce(sum(${payments.usdAmount}), 0)` })
     .from(payments)
-    .where(and(gte(payments.createdAt, start), lt(payments.createdAt, end)));
+    // Burns destroy tokens rather than paying the treasury, so they aren't revenue.
+    .where(and(gte(payments.createdAt, start), lt(payments.createdAt, end), ne(payments.currency, "BURN")));
   const [c] = await db
     .select({ total: sql<string>`coalesce(sum(${usageRecords.providerCostUsd}), 0)` })
     .from(usageRecords)
@@ -185,7 +186,12 @@ export async function buybackOverview(db: Db) {
   const executions = await db.select().from(buybackExecutions).orderBy(desc(buybackExecutions.createdAt)).limit(100);
   const burned = executions.filter((x) => x.kind === "burn" && x.status === "verified").reduce((n, x) => n + BigInt(x.tokenAmountBaseUnits ?? "0"), 0n);
   const bought = executions.filter((x) => x.kind === "buy" && x.status === "verified").reduce((n, x) => n + BigInt(x.tokenAmountBaseUnits ?? "0"), 0n);
+  const [userBurns] = await db
+    .select({ total: sql<string>`coalesce(sum(${payments.amountBaseUnits}), 0)`, count: sql<string>`count(*)` })
+    .from(payments)
+    .where(eq(payments.currency, "BURN"));
   return {
+    userBurns: { baseUnits: String(userBurns.total).split(".")[0], count: Number(userBurns.count) },
     config: {
       treasury: e.TREASURY_WALLET ?? null,
       mint: e.PROJECT_TOKEN_MINT ?? null,

@@ -2,8 +2,8 @@ import "server-only";
 import { getAccount, getMint } from "@solana/spl-token";
 import { Keypair, PublicKey, type ParsedTransactionWithMeta } from "@solana/web3.js";
 import { and, desc, eq, gt } from "drizzle-orm";
-import { creditsForPackage, planPriceUsd, usdToBaseUnits, type PaymentCurrency } from "@/lib/credits/calc";
-import { buildPaymentTransaction, paymentDestination } from "@/lib/payments/transaction";
+import { creditsForPackage, packageChargeUsd, planPriceUsd, usdToBaseUnits, type PaymentCurrency } from "@/lib/credits/calc";
+import { buildBurnPaymentTransaction, buildPaymentTransaction, paymentDestination } from "@/lib/payments/transaction";
 import { validatePaymentTransaction } from "@/lib/payments/verify";
 import { getVerifiedConnection } from "@/lib/solana/connection";
 import { getSolUsdPrice } from "@/lib/solana/price";
@@ -33,14 +33,15 @@ export function quoteProduct(kind: ProductKind, productId: string, currency: Pay
     const usd = m ? Number(m[1]) : NaN;
     if (!e.CREDIT_PACKAGES_USD.includes(usd)) throw new HttpError(400, "Unknown credit package", "unknown_product");
     const { total } = creditsForPackage({ usd, currency, creditsPerUsd: e.CREDITS_PER_USD, tokenBonusBps: e.TOKEN_CREDIT_BONUS_BPS });
-    return { kind, productId, usd, credits: total };
+    // Burning is priced below the package list price; the credits granted stay the same.
+    return { kind, productId, usd: packageChargeUsd(usd, currency, e.TOKEN_BURN_DISCOUNT_BPS), credits: total };
   }
   const plan = getPlans().find((p) => p.id === productId && p.id !== "free");
   if (!plan) throw new HttpError(400, "Unknown plan", "unknown_product");
   return {
     kind,
     productId,
-    usd: planPriceUsd(plan.priceUsd, currency, e.TOKEN_PLAN_DISCOUNT_BPS),
+    usd: planPriceUsd(plan.priceUsd, currency, e.TOKEN_PLAN_DISCOUNT_BPS, e.TOKEN_BURN_DISCOUNT_BPS),
     credits: plan.includedCredits,
     planId: plan.id as "pro" | "max",
   };
@@ -66,7 +67,7 @@ async function resolveAsset(currency: PaymentCurrency): Promise<Asset> {
   if (!acct) throw new HttpError(503, `${currency} mint not found on ${e.SOLANA_NETWORK}`, "mint_not_found");
   const info = await getMint(conn, mint, "confirmed", acct.owner);
   let unitPriceUsd = 1; // USDC is treated as $1.00
-  if (currency === "TOKEN") {
+  if (currency === "TOKEN" || currency === "BURN") {
     const token = await getTokenInfo();
     if (!token.priceUsd) throw new HttpError(503, "Token price is unavailable right now, so we can't quote it fairly.", "price_unavailable");
     unitPriceUsd = token.priceUsd;
@@ -100,9 +101,12 @@ export async function createPaymentIntent(
   }
 
   const reference = Keypair.generate().publicKey;
-  const destination = paymentDestination(treasury, asset.spl);
+  const burning = input.currency === "BURN";
+  // A burn destroys tokens from the payer's own account; every other currency pays the treasury.
+  const destination = burning ? paymentDestination(payer, asset.spl) : paymentDestination(treasury, asset.spl);
   const { blockhash, lastValidBlockHeight } = await conn.getLatestBlockhash("confirmed");
-  const tx = buildPaymentTransaction({ payer, treasury, reference, amount, recentBlockhash: blockhash, lastValidBlockHeight, spl: asset.spl });
+  const txParams = { payer, treasury, reference, amount, recentBlockhash: blockhash, lastValidBlockHeight, spl: asset.spl };
+  const tx = burning ? buildBurnPaymentTransaction({ ...txParams, spl: asset.spl! }) : buildPaymentTransaction(txParams);
   const expiresAt = new Date(Date.now() + e.PAYMENT_INTENT_TTL_SECONDS * 1000);
 
   const [intent] = await db
@@ -272,7 +276,7 @@ export async function verifyAndFulfill(
   }
 
   const check = validatePaymentTransaction(tx, {
-    kind: intent.mint ? "SPL" : "SOL",
+    kind: intent.currency === "BURN" ? "BURN" : intent.mint ? "SPL" : "SOL",
     payer: intent.payer,
     destination: intent.destination,
     mint: intent.mint ?? undefined,

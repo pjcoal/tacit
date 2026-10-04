@@ -1,5 +1,6 @@
 import {
   createAssociatedTokenAccountIdempotentInstruction,
+  createBurnCheckedInstruction,
   createTransferCheckedInstruction,
   getAssociatedTokenAddressSync,
 } from "@solana/spl-token";
@@ -44,6 +45,21 @@ export function buildPaymentTransaction(p: PaymentTxParams): Transaction {
   tx.add(createAssociatedTokenAccountIdempotentInstruction(p.payer, destination, p.treasury, mint, programId));
   const ix = createTransferCheckedInstruction(source, mint, destination, p.payer, p.amount, decimals, [], programId);
   ix.keys.push(referenceMeta);
+  tx.add(ix);
+  return tx;
+}
+
+/**
+ * Burn-for-credits: an SPL burn from the payer's own token account (supply
+ * decreases on-chain), tagged with the intent's reference key like a transfer.
+ */
+export function buildBurnPaymentTransaction(p: PaymentTxParams & { spl: NonNullable<PaymentTxParams["spl"]> }): Transaction {
+  const tx = new Transaction({ feePayer: p.payer, blockhash: p.recentBlockhash, lastValidBlockHeight: p.lastValidBlockHeight });
+  tx.add(ComputeBudgetProgram.setComputeUnitLimit({ units: 60_000 }));
+  const { mint, decimals, programId } = p.spl;
+  const source = getAssociatedTokenAddressSync(mint, p.payer, false, programId);
+  const ix = createBurnCheckedInstruction(source, mint, p.payer, p.amount, decimals, [], programId);
+  ix.keys.push({ pubkey: p.reference, isSigner: false, isWritable: false });
   tx.add(ix);
   return tx;
 }

@@ -6,6 +6,7 @@ import { useConfig } from "@/components/providers/config-provider";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Segmented } from "@/components/ui/segmented";
+import { currencyOptions } from "@/components/credits/currency-options";
 import { planPriceUsd, type PaymentCurrency } from "@/lib/credits/calc";
 import { cn, formatUsd } from "@/lib/utils";
 
@@ -21,20 +22,16 @@ export function Pricing() {
           ariaLabel="Pay with"
           value={currency}
           onChange={setCurrency}
-          options={[
-            { value: "USDC", label: "USDC" },
-            { value: "SOL", label: "SOL" },
-            { value: "TOKEN", label: `$${cfg.token.symbol}`, disabled: !cfg.payments.currencies.TOKEN, title: cfg.payments.currencies.TOKEN ? undefined : "Available after the token launches" },
-          ]}
+          options={currencyOptions(cfg)}
         />
         <p className="text-[13px] text-ink-2">
-          {discount > 0 ? `${discount}% off plans when paying with $${cfg.token.symbol}. ` : ""}Fixed-duration access — nothing renews or charges automatically.
+          {cfg.payments.burnDiscountBps > 0 ? `Burn $${cfg.token.symbol} for ${cfg.payments.burnDiscountBps / 100}% off` : ""}{discount > 0 ? `${cfg.payments.burnDiscountBps > 0 ? ", or pay with it for" : ""} ${discount}% off. ` : ". "}Fixed-duration access — nothing renews or charges automatically.
         </p>
       </div>
 
       <div className="mt-8 grid gap-4 lg:grid-cols-3">
         {cfg.plans.map((p) => {
-          const price = planPriceUsd(p.priceUsd, currency, cfg.payments.tokenPlanDiscountBps);
+          const price = planPriceUsd(p.priceUsd, currency, cfg.payments.tokenPlanDiscountBps, cfg.payments.burnDiscountBps);
           const featured = p.id === "pro";
           return (
             <div key={p.id} className={cn("card relative flex flex-col p-6 sm:p-7", featured && "border-ink/40 shadow-[var(--shadow-pop)]")}>
@@ -46,9 +43,9 @@ export function Pricing() {
                 <span className="display text-[56px]">{p.priceUsd === 0 ? "$0" : formatUsd(price)}</span>
                 {p.priceUsd > 0 ? <span className="text-[14px] text-dim">/ {p.durationDays} days</span> : null}
               </div>
-              {p.priceUsd > 0 && currency === "TOKEN" && price < p.priceUsd ? (
+              {p.priceUsd > 0 && (currency === "TOKEN" || currency === "BURN") && price < p.priceUsd ? (
                 <p className="mt-1 text-[12.5px] text-mint">
-                  <span className="text-dim line-through">{formatUsd(p.priceUsd)}</span> paid in ${cfg.token.symbol}
+                  <span className="text-dim line-through">{formatUsd(p.priceUsd)}</span> {currency === "BURN" ? "burned" : "paid"} in ${cfg.token.symbol}
                 </p>
               ) : (
                 <p className="mt-1 h-[18px] text-[12.5px] text-dim">{p.priceUsd > 0 ? `Paid once in ${currency === "TOKEN" ? "$" + cfg.token.symbol : currency}` : "No wallet needed"}</p>

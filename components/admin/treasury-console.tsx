@@ -46,6 +46,7 @@ interface Overview {
     sinceLastProposal: { gross: number; providerCost: number; net: number; periodStart: string; proposedUsd: number };
   };
   totals: { boughtBaseUnits: string; burnedBaseUnits: string };
+  userBurns: { baseUnits: string; count: number };
   proposals: Proposal[];
   executions: Execution[];
 }
@@ -241,7 +242,8 @@ export function TreasuryConsole() {
         <div className="flex items-center justify-between px-5 pt-5">
           <h2 className="text-[15px] font-semibold">Execution log</h2>
           <span className="font-mono text-[11.5px] text-dim">
-            bought {formatBaseUnits(BigInt(data.totals.boughtBaseUnits), dec, 2)} · burned {formatBaseUnits(BigInt(data.totals.burnedBaseUnits), dec, 2)}
+            bought {formatBaseUnits(BigInt(data.totals.boughtBaseUnits), dec, 2)} · treasury burned {formatBaseUnits(BigInt(data.totals.burnedBaseUnits), dec, 2)} · users burned{" "}
+            {formatBaseUnits(BigInt(data.userBurns.baseUnits), dec, 2)} ({data.userBurns.count})
           </span>
         </div>
         <table className="mt-3 w-full min-w-[640px] text-left text-[13px]">

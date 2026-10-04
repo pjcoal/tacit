@@ -95,6 +95,7 @@ Replays fail on the unique signature; double-fulfilment fails on the intent stat
 
 ### Token utility
 
+- **Burn for credits** — users burn $VEIL (an SPL `burnChecked` from their own wallet, tagged with the intent reference) and get credits at `TOKEN_BURN_DISCOUNT_BPS` off the USDC price. Verified on-chain like any payment; excluded from revenue. Enabled once `PROJECT_TOKEN_MINT` is set.
 - **Credit bonus** for token payments (`TOKEN_CREDIT_BONUS_BPS`) and **plan discount** (`TOKEN_PLAN_DISCOUNT_BPS`) — active.
 - **Token-gated benefit** — holders (≥ `TOKEN_GATE_HOLDER_MIN`) prove ownership with a signed message (no transaction) for 3× free messages for 24 h. Only "holder until …" is stored.
 - **Buyback & burn** — admin-only and manual: revenue ledger → proposal (`BUYBACK_ALLOCATION_BPS` of net) → approve/reject → unsigned Pump/PumpSwap buy with the treasury as payer → treasury wallet signs → server verifies on-chain and logs. Burns are SPL `burnChecked` from the treasury ATA. Nothing is scheduled or automatic. The landing page labels this **Planned** unless `TOKEN_BUYBACK_STATUS=active`.

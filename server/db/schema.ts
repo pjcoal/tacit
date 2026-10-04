@@ -78,7 +78,7 @@ export const paymentIntents = pgTable(
       .references(() => accounts.id, { onDelete: "cascade" }),
     kind: text("kind", { enum: ["credits", "plan"] }).notNull(),
     productId: text("product_id").notNull(),
-    currency: text("currency", { enum: ["SOL", "USDC", "TOKEN"] }).notNull(),
+    currency: text("currency", { enum: ["SOL", "USDC", "TOKEN", "BURN"] }).notNull(),
     mint: text("mint"),
     tokenProgram: text("token_program"),
     payer: text("payer").notNull(),

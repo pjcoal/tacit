@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   applyTokenBonus,
+  burnPriceUsd,
+  packageChargeUsd,
   creditsForPackage,
   fixedCostCredits,
   formatBaseUnits,
@@ -64,5 +66,16 @@ describe("quote conversion", () => {
   it("formats base units", () => {
     expect(formatBaseUnits(66_666_667n, 9, 6)).toBe("0.066666");
     expect(formatBaseUnits(1_500_000_000n, 6, 2)).toBe("1,500");
+  });
+});
+
+describe("burn for credits", () => {
+  it("is cheaper than USDC by the configured discount, with the same credits", () => {
+    expect(burnPriceUsd(10, 2000)).toBe(8);
+    expect(packageChargeUsd(25, "BURN", 2000)).toBe(20);
+    expect(packageChargeUsd(25, "USDC", 2000)).toBe(25);
+    expect(creditsForPackage({ usd: 10, currency: "BURN", creditsPerUsd: 100, tokenBonusBps: 1000 })).toEqual({ base: 1000, bonus: 0, total: 1000 });
+    expect(planPriceUsd(12, "BURN", 1000, 2000)).toBe(9.6);
+    expect(() => burnPriceUsd(10, 10_000)).toThrow();
   });
 });

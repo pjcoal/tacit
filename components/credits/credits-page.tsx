@@ -9,7 +9,8 @@ import { useConfig } from "@/components/providers/config-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Segmented } from "@/components/ui/segmented";
-import { creditsForPackage, planPriceUsd, type PaymentCurrency } from "@/lib/credits/calc";
+import { creditsForPackage, packageChargeUsd, planPriceUsd, type PaymentCurrency } from "@/lib/credits/calc";
+import { currencyOptions, effectiveCurrency } from "./currency-options";
 import { apiJson, cn, formatUsd } from "@/lib/utils";
 import { AccountGate } from "./account-panel";
 import { PurchaseDialog, type Product } from "./purchase-dialog";
@@ -27,13 +28,14 @@ export function CreditsPage() {
   const { account, loading } = useAccount();
   const [chosenCurrency, setCurrency] = useState<PaymentCurrency>(() => {
     const c = params.get("currency");
-    return c === "SOL" || c === "USDC" || c === "TOKEN" ? c : "USDC";
+    return c === "SOL" || c === "USDC" || c === "TOKEN" || c === "BURN" ? c : "USDC";
   });
   const [usd, setUsd] = useState<number>(() => Number(params.get("package")) || cfg.payments.packagesUsd[1] || cfg.payments.packagesUsd[0]);
   const [product, setProduct] = useState<Product | null>(null);
   const [ledger, setLedger] = useState<LedgerRow[] | null>(null);
 
-  const currency: PaymentCurrency = chosenCurrency === "TOKEN" && !cfg.payments.currencies.TOKEN ? "USDC" : chosenCurrency;
+  const currency: PaymentCurrency = effectiveCurrency(cfg, chosenCurrency);
+  const burnBps = cfg.payments.burnDiscountBps;
 
   useEffect(() => {
     if (!account) return;
@@ -51,11 +53,7 @@ export function CreditsPage() {
   const activeProduct = product ?? autoProduct;
 
   const pkg = creditsForPackage({ usd, currency, creditsPerUsd: cfg.payments.creditsPerUsd, tokenBonusBps: cfg.payments.tokenBonusBps });
-  const currencyOptions = [
-    { value: "USDC" as const, label: "USDC" },
-    { value: "SOL" as const, label: "SOL" },
-    { value: "TOKEN" as const, label: `$${cfg.token.symbol}`, disabled: !cfg.payments.currencies.TOKEN, title: cfg.payments.currencies.TOKEN ? undefined : "Available after launch" },
-  ];
+  const charge = packageChargeUsd(usd, currency, burnBps);
 
   return (
     <div className="scrollbar-thin h-full overflow-y-auto">
@@ -95,7 +93,7 @@ export function CreditsPage() {
         <section className="mt-10">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <h2 className="text-[18px] font-semibold">Buy credits</h2>
-            <Segmented ariaLabel="Currency" value={currency} onChange={setCurrency} options={currencyOptions} />
+            <Segmented ariaLabel="Currency" value={currency} onChange={setCurrency} options={currencyOptions(cfg)} />
           </div>
           <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
             {cfg.payments.packagesUsd.map((p) => {
@@ -106,7 +104,15 @@ export function CreditsPage() {
                   onClick={() => setUsd(p)}
                   className={cn("card px-4 py-4 text-left transition-colors", usd === p ? "border-ink shadow-[0_0_0_1px_var(--ink)]" : "hover:border-ink/30")}
                 >
-                  <div className="text-[20px] font-semibold">${p}</div>
+                  <div className="text-[20px] font-semibold">
+                    {currency === "BURN" ? (
+                      <>
+                        {formatUsd(packageChargeUsd(p, currency, burnBps))} <span className="text-[13px] font-normal text-dim line-through">${p}</span>
+                      </>
+                    ) : (
+                      `$${p}`
+                    )}
+                  </div>
                   <div className="text-[13px] text-ink-2 tabular-nums">{c.total.toLocaleString("en-US")} credits</div>
                   {c.bonus ? <div className="mt-1 text-[11.5px] text-mint">+{c.bonus.toLocaleString("en-US")} bonus</div> : null}
                 </button>
@@ -120,8 +126,15 @@ export function CreditsPage() {
             onClick={() => setProduct({ kind: "credits", productId: `credits_${usd}`, label: `${pkg.total.toLocaleString("en-US")} credits`, currency })}
             data-testid="buy-credits"
           >
-            Buy {pkg.total.toLocaleString("en-US")} credits for ${usd}
+            {currency === "BURN"
+              ? `Burn ${formatUsd(charge)} of $${cfg.token.symbol} for ${pkg.total.toLocaleString("en-US")} credits`
+              : `Buy ${pkg.total.toLocaleString("en-US")} credits for $${usd}`}
           </Button>
+          {currency === "BURN" ? (
+            <p className="mt-3 max-w-xl text-[13px] text-ink-2">
+              Burning is {burnBps / 100}% cheaper than paying in USDC. The tokens are destroyed permanently with an on-chain burn from your own wallet — nobody receives them, and it can&apos;t be undone.
+            </p>
+          ) : null}
         </section>
 
         <section className="mt-12">
@@ -131,7 +144,7 @@ export function CreditsPage() {
             {cfg.plans
               .filter((p) => p.id !== "free")
               .map((p) => {
-                const price = planPriceUsd(p.priceUsd, currency, cfg.payments.tokenPlanDiscountBps);
+                const price = planPriceUsd(p.priceUsd, currency, cfg.payments.tokenPlanDiscountBps, burnBps);
                 return (
                   <div key={p.id} className="card flex flex-col p-5">
                     <div className="flex items-center justify-between">

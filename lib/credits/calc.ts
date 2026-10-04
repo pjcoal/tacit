@@ -18,7 +18,8 @@ export function applyTokenBonus(credits: number, bonusBps: number): number {
   return Math.floor((credits * (BPS + bonusBps)) / BPS);
 }
 
-export type PaymentCurrency = "SOL" | "USDC" | "TOKEN";
+/** TOKEN = transfer the project token to the treasury; BURN = burn the project token. */
+export type PaymentCurrency = "SOL" | "USDC" | "TOKEN" | "BURN";
 
 export interface PackageCreditsInput {
   usd: number;
@@ -34,11 +35,24 @@ export function creditsForPackage({ usd, currency, creditsPerUsd, tokenBonusBps 
 }
 
 /** Plan price in USD after the project-token discount (if paying with the token). */
-export function planPriceUsd(priceUsd: number, currency: PaymentCurrency, tokenDiscountBps: number): number {
+export function planPriceUsd(priceUsd: number, currency: PaymentCurrency, tokenDiscountBps: number, burnDiscountBps = 0): number {
   if (tokenDiscountBps < 0 || tokenDiscountBps > BPS) throw new Error("tokenDiscountBps out of range");
+  if (currency === "BURN") return burnPriceUsd(priceUsd, burnDiscountBps);
   const cents = Math.round(priceUsd * 100);
   const discounted = currency === "TOKEN" ? Math.ceil((cents * (BPS - tokenDiscountBps)) / BPS) : cents;
   return discounted / 100;
+}
+
+/** USD value of tokens to burn for something listed at `priceUsd` (e.g. 2000 bps = 20% cheaper than USDC). */
+export function burnPriceUsd(priceUsd: number, burnDiscountBps: number): number {
+  if (burnDiscountBps < 0 || burnDiscountBps >= BPS) throw new Error("burnDiscountBps out of range");
+  const cents = Math.round(priceUsd * 100);
+  return Math.ceil((cents * (BPS - burnDiscountBps)) / BPS) / 100;
+}
+
+/** USD amount actually charged for a credit package in a given currency. */
+export function packageChargeUsd(usd: number, currency: PaymentCurrency, burnDiscountBps: number): number {
+  return currency === "BURN" ? burnPriceUsd(usd, burnDiscountBps) : usd;
 }
 
 export interface UsageCostInput {

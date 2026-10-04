@@ -92,6 +92,11 @@ export function TokenSection() {
               Pump bonding curve → PumpSwap after graduation {statusBadge}
             </span>
           </Fact>
+          <Fact label="Burn for credits">
+            {cfg.payments.burnDiscountBps > 0
+              ? `Burn $${cfg.token.symbol} for credits at ${cfg.payments.burnDiscountBps / 100}% off the USDC price — supply goes down with every purchase${cfg.token.mint ? "" : " (live at launch)"}.`
+              : "Not enabled"}
+          </Fact>
           <Fact label="Credit bonus">
             {cfg.payments.tokenBonusBps > 0 ? `+${cfg.payments.tokenBonusBps / 100}% credits when paying with $${cfg.token.symbol}` : "None configured"}
           </Fact>

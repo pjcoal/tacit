@@ -7,8 +7,9 @@ import { useConfig } from "@/components/providers/config-provider";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Segmented } from "@/components/ui/segmented";
-import { creditsForPackage, type PaymentCurrency } from "@/lib/credits/calc";
-import { cn } from "@/lib/utils";
+import { currencyOptions } from "@/components/credits/currency-options";
+import { creditsForPackage, packageChargeUsd, type PaymentCurrency } from "@/lib/credits/calc";
+import { cn, formatUsd } from "@/lib/utils";
 
 function AnimatedNumber({ value }: { value: number }) {
   const mv = useMotionValue(value);
@@ -29,7 +30,11 @@ export function CreditsSection() {
   const bonusPct = cfg.payments.tokenBonusBps / 100;
 
   const steps = [
-    { icon: Sparkles, title: "Choose an amount", body: `Pay in SOL or USDC${cfg.token.mint ? ` or $${cfg.token.symbol}` : ""}. We quote the exact amount.` },
+    {
+      icon: Sparkles,
+      title: "Choose an amount",
+      body: `Pay in SOL or USDC, or burn $${cfg.token.symbol} for ${cfg.payments.burnDiscountBps / 100}% off${cfg.token.mint ? "" : " once it launches"}. We quote the exact amount.`,
+    },
     { icon: PenLine, title: "Approve in your wallet", body: "One transfer to the treasury. Nothing is signed for you." },
     { icon: ShieldCheck, title: "Verified on-chain", body: "Our server checks the transaction itself before any credits are issued." },
   ];
@@ -75,16 +80,17 @@ export function CreditsSection() {
               ariaLabel="Pay with"
               value={currency}
               onChange={setCurrency}
-              options={[
-                { value: "USDC", label: "USDC" },
-                { value: "SOL", label: "SOL" },
-                { value: "TOKEN", label: `$${cfg.token.symbol}`, disabled: !cfg.payments.currencies.TOKEN, title: cfg.payments.currencies.TOKEN ? undefined : "Available after the token launches" },
-              ]}
+              options={currencyOptions(cfg)}
             />
-            {bonusPct > 0 ? <span className="text-[12.5px] text-dim">+{bonusPct}% credits with ${cfg.token.symbol}</span> : null}
+            <span className="text-[12.5px] text-dim">
+              {cfg.payments.burnDiscountBps > 0 ? `${cfg.payments.burnDiscountBps / 100}% off when you burn $${cfg.token.symbol}` : bonusPct > 0 ? `+${bonusPct}% credits with $${cfg.token.symbol}` : ""}
+            </span>
           </div>
           <ButtonLink href={`/app/credits?package=${usd}&currency=${currency}`} size="lg" className="mt-7 w-full">
-            Buy {c.total.toLocaleString("en-US")} credits <ArrowRight size={16} />
+            {currency === "BURN"
+              ? `Burn ${formatUsd(packageChargeUsd(usd, currency, cfg.payments.burnDiscountBps))} of $${cfg.token.symbol} for ${c.total.toLocaleString("en-US")} credits`
+              : `Buy ${c.total.toLocaleString("en-US")} credits`}{" "}
+            <ArrowRight size={16} />
           </ButtonLink>
           <p className="mt-3 text-center text-[12px] text-dim">1 USD = {cfg.payments.creditsPerUsd} credits · credits don&apos;t expire</p>
         </div>

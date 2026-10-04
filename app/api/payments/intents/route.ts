@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 const schema = z.object({
   kind: z.enum(["credits", "plan"]),
   productId: z.string().min(1).max(40),
-  currency: z.enum(["SOL", "USDC", "TOKEN"]),
+  currency: z.enum(["SOL", "USDC", "TOKEN", "BURN"]),
   payer: pubkey,
 });
 

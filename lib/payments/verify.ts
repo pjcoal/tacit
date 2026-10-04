@@ -7,12 +7,13 @@ import type { ParsedInstruction, ParsedTransactionWithMeta, PartiallyDecodedInst
  */
 
 export interface PaymentExpectation {
-  kind: "SOL" | "SPL";
+  /** SOL / SPL: transfer to the treasury. BURN: SPL burn from the payer's own token account. */
+  kind: "SOL" | "SPL" | "BURN";
   /** Wallet that must sign and fund the transfer. */
   payer: string;
-  /** SOL: treasury wallet. SPL: treasury's associated token account for the mint. */
+  /** SOL: treasury wallet. SPL: treasury's token account for the mint. BURN: the payer's token account being burned from. */
   destination: string;
-  /** SPL only. */
+  /** SPL and BURN. */
   mint?: string;
   /** Minimum amount in base units. */
   minAmount: bigint;
@@ -74,9 +75,17 @@ export function validatePaymentTransaction(tx: ParsedTransactionWithMeta | null,
         total += BigInt(String(info.amount));
       }
     }
+
+    if (exp.kind === "BURN" && TOKEN_PROGRAMS.has(program) && (parsed.type === "burnChecked" || parsed.type === "burn")) {
+      const authority = (info.authority ?? info.multisigAuthority) as string | undefined;
+      if (info.account !== exp.destination || info.mint !== exp.mint || authority !== exp.payer) continue;
+      const amt = parsed.type === "burnChecked" ? (info.tokenAmount as { amount?: string } | undefined)?.amount : String(info.amount);
+      if (amt) total += BigInt(amt);
+    }
   }
 
   if (total < exp.minAmount) {
+    if (exp.kind === "BURN") return { ok: false, reason: total === 0n ? "No matching token burn" : "Burned amount is lower than quoted" };
     return { ok: false, reason: total === 0n ? "No matching transfer to the treasury" : "Transferred amount is lower than quoted" };
   }
 
@@ -86,6 +95,11 @@ export function validatePaymentTransaction(tx: ParsedTransactionWithMeta | null,
   if (exp.kind === "SOL") {
     const delta = BigInt(tx.meta.postBalances[destIndex]) - BigInt(tx.meta.preBalances[destIndex]);
     if (delta < exp.minAmount) return { ok: false, reason: "Treasury balance did not increase by the quoted amount" };
+  } else if (exp.kind === "BURN") {
+    const pre = tx.meta.preTokenBalances?.find((b) => b.accountIndex === destIndex && b.mint === exp.mint);
+    const post = tx.meta.postTokenBalances?.find((b) => b.accountIndex === destIndex && b.mint === exp.mint);
+    const burned = BigInt(pre?.uiTokenAmount.amount ?? "0") - BigInt(post?.uiTokenAmount.amount ?? "0");
+    if (burned < exp.minAmount) return { ok: false, reason: "Token balance did not decrease by the quoted amount" };
   } else {
     const pre = tx.meta.preTokenBalances?.find((b) => b.accountIndex === destIndex && b.mint === exp.mint);
     const post = tx.meta.postTokenBalances?.find((b) => b.accountIndex === destIndex && b.mint === exp.mint);

@@ -64,6 +64,8 @@ const schema = z.object({
 
   TOKEN_CREDIT_BONUS_BPS: intFromEnv(1000, 0, 10_000),
   TOKEN_PLAN_DISCOUNT_BPS: intFromEnv(1000, 0, 5_000),
+  /** Burning the project token for credits costs this much less than USDC (2000 = 20% cheaper). */
+  TOKEN_BURN_DISCOUNT_BPS: intFromEnv(2000, 0, 9_000),
   CREDITS_PER_USD: intFromEnv(100, 1, 1_000_000),
   CREDIT_PACKAGES_USD: optionalString.transform((v) =>
     (v ?? "10,25,50,100")

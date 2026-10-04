@@ -105,3 +105,51 @@ describe("validatePaymentTransaction (SPL)", () => {
     expect(validatePaymentTransaction(splTx({ delta: "0" }), exp())).toMatchObject({ ok: false, reason: /balance/ });
   });
 });
+
+describe("validatePaymentTransaction (BURN)", () => {
+  const mint = key();
+  const payerAta = key();
+
+  function burnTx(over: { mint?: string; authority?: string; amount?: string; after?: string; account?: string } = {}) {
+    const amount = over.amount ?? "8000000";
+    return parsedTx({
+      payer,
+      keys: [{ pubkey: payer, signer: true }, { pubkey: payerAta }, { pubkey: mint }, { pubkey: reference }],
+      instructions: [
+        {
+          program: "spl-token",
+          type: "burnChecked",
+          info: { account: over.account ?? payerAta, mint: over.mint ?? mint, authority: over.authority ?? payer, tokenAmount: { amount, decimals: 6 } },
+        },
+      ],
+      preTokenBalances: [{ accountIndex: 1, mint, uiTokenAmount: { amount: "50000000", decimals: 6, uiAmount: 50, uiAmountString: "50" } }] as never,
+      postTokenBalances: [{ accountIndex: 1, mint, uiTokenAmount: { amount: over.after ?? String(50_000_000 - Number(amount)), decimals: 6, uiAmount: 42, uiAmountString: "42" } }] as never,
+    });
+  }
+  const exp = (): PaymentExpectation => ({ kind: "BURN", payer, destination: payerAta, mint, minAmount: 8_000_000n, reference, ...window });
+
+  it("accepts a burn from the payer's own token account", () => {
+    expect(validatePaymentTransaction(burnTx(), exp())).toMatchObject({ ok: true, amount: 8_000_000n });
+  });
+  it("rejects burning a different token", () => {
+    expect(validatePaymentTransaction(burnTx({ mint: key() }), exp())).toMatchObject({ ok: false, reason: /burn/ });
+  });
+  it("rejects a burn signed by someone else or from another account", () => {
+    expect(validatePaymentTransaction(burnTx({ authority: key() }), exp()).ok).toBe(false);
+    expect(validatePaymentTransaction(burnTx({ account: key() }), exp()).ok).toBe(false);
+  });
+  it("rejects burning less than quoted", () => {
+    expect(validatePaymentTransaction(burnTx({ amount: "7999999" }), exp())).toMatchObject({ ok: false, reason: /lower/ });
+  });
+  it("rejects when the balance didn't actually drop", () => {
+    expect(validatePaymentTransaction(burnTx({ after: "50000000" }), exp())).toMatchObject({ ok: false, reason: /decrease/ });
+  });
+  it("does not accept a transfer as a burn", () => {
+    const transfer = parsedTx({
+      payer,
+      keys: [{ pubkey: payer, signer: true }, { pubkey: payerAta }, { pubkey: reference }],
+      instructions: [{ program: "spl-token", type: "transferChecked", info: { source: payerAta, destination: payerAta, mint, authority: payer, tokenAmount: { amount: "8000000", decimals: 6 } } }],
+    });
+    expect(validatePaymentTransaction(transfer, exp()).ok).toBe(false);
+  });
+});
