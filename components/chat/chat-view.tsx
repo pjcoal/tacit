@@ -52,11 +52,10 @@ export function ChatView() {
       ...(conv ? { model: conv.model, mode: conv.privacyMode } : {}),
       ...own,
     };
-    // If the chosen model isn't available on this deployment, fall back to Auto.
-    const m = models?.chat.find((x) => x.id === c.model);
-    if (models && c.model !== "auto" && (!m || !m.available)) c.model = "auto";
+    // The app always routes automatically; model choice is an API-only feature.
+    c.model = "auto";
     return c;
-  }, [ready, settings, chat.conversation, overrides, models]);
+  }, [ready, settings, chat.conversation, overrides]);
 
   const scroller = useRef<HTMLDivElement>(null);
   const [pinned, setPinned] = useState(true);
@@ -67,7 +66,6 @@ export function ChatView() {
 
   const visible = chat.messages.filter((m) => m.role !== "tool");
   const lastAssistant = [...visible].reverse().find((m) => m.role === "assistant");
-  const hasCredits = (account?.balance ?? 0) > 0;
   const noProviders = models && !models.chat.some((m) => m.available);
 
   const updateComposer = (patch: Partial<ComposerSettings>) => {
@@ -166,7 +164,6 @@ export function ChatView() {
               }}
               onStop={chat.stop}
               streaming={chat.streaming}
-              hasCredits={hasCredits}
             />
           ) : (
             <div className="shimmer h-[104px] rounded-2xl" />

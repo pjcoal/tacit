@@ -9,7 +9,6 @@ import { IMAGE_MIME_TYPES, LIMITS, sniffImageMime, TEXT_EXTENSIONS } from "@/lib
 import type { StoredAttachment } from "@/lib/storage/db";
 import { cn } from "@/lib/utils";
 import type { ReasoningLevel, WireImage } from "@/types/chat";
-import { ModelPicker } from "./model-picker";
 import type { SendInput } from "./use-chat";
 
 interface Pending {
@@ -44,7 +43,6 @@ export function Composer({
   onSend,
   onStop,
   streaming,
-  hasCredits,
   autoFocus,
 }: {
   models: PublicModel[] | null;
@@ -53,7 +51,6 @@ export function Composer({
   onSend: (input: SendInput) => void;
   onStop: () => void;
   streaming: boolean;
-  hasCredits: boolean;
   autoFocus?: boolean;
 }) {
   const [text, setText] = useState("");
@@ -210,7 +207,6 @@ export function Composer({
           }}
         />
         <div className="no-scrollbar flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto">
-          <ModelPicker models={models} value={settings.model} onChange={(id) => onSettings({ model: id })} hasCredits={hasCredits} />
 
           {model && model.reasoning.length > 0 ? (
             <DM.Root>

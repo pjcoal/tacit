@@ -3,10 +3,7 @@
 import { ArrowUp, Download, FileCode2, FolderTree, Play, Plus, Square, Terminal, Trash2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useModels } from "@/components/app/use-models";
 import { CopyButton, Markdown } from "@/components/chat/markdown";
-import { ModelPicker } from "@/components/chat/model-picker";
-import { useAccount } from "@/components/app/account-provider";
 import { Segmented } from "@/components/ui/segmented";
 import { localBrowserSandbox, parseAgentFiles, remoteSandbox } from "@/lib/code/sandbox";
 import { createPlaceholderMap, restorePartial, restoreResponse, sendSanitizedPrompt } from "@/lib/privacy";
@@ -61,14 +58,12 @@ export function CodeAgent() {
   const params = useSearchParams();
   const router = useRouter();
   const pid = params.get("p");
-  const { models } = useModels();
-  const { account } = useAccount();
   const { value: projects } = useLive("projects", listProjects, [] as CodeProject[]);
   const [loaded, setProject] = useState<CodeProject | null>(null);
   // Only show the project the URL points at (a stale one is never displayed after navigation).
   const project = pid && loaded?.id === pid ? loaded : null;
   const [input, setInput] = useState("");
-  const [model, setModel] = useState("auto");
+  const model = "auto";
   const [streaming, setStreaming] = useState(false);
   const [live, setLive] = useState("");
   const [log, setLog] = useState<string[]>([]);
@@ -133,7 +128,6 @@ export function CodeAgent() {
       for await (const ev of events) {
         if (ev.type === "meta") {
           modelLabel = ev.modelLabel;
-          addLog(`model: ${ev.modelLabel}`);
         } else if (ev.type === "text") {
           raw += ev.delta;
           const parsed = parseAgentFiles(raw);
@@ -203,7 +197,6 @@ export function CodeAgent() {
             </div>
           ) : (
             <div key={m.id} className="text-[14px]">
-              <div className="mb-1 font-mono text-[11px] text-dim">{m.model}</div>
               <Markdown text={parseAgentFiles(m.content).prose} />
             </div>
           ),
@@ -233,7 +226,6 @@ export function CodeAgent() {
             className="block w-full resize-none bg-transparent px-3 pt-2.5 text-[14px] outline-none placeholder:text-dim"
           />
           <div className="flex items-center gap-2 px-2 pb-2">
-            <ModelPicker models={models?.chat ?? null} value={model} onChange={setModel} hasCredits={(account?.balance ?? 0) > 0} />
             {streaming ? (
               <button onClick={() => abort.current?.abort()} className="ml-auto grid h-8 w-8 place-items-center rounded-full bg-ink text-bg" aria-label="Stop">
                 <Square size={12} fill="currentColor" />

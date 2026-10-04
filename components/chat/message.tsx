@@ -63,10 +63,6 @@ export function AssistantMessage({
 
   return (
     <div className="group" data-testid="assistant-message">
-      <div className="mb-1.5 flex items-center gap-2 font-mono text-[11px] text-dim">
-        <span>{m.modelLabel ?? "…"}</span>
-        {m.billing === "free" ? <span className="rounded border border-line px-1 text-[10px] uppercase">free</span> : null}
-      </div>
       {m.reasoning ? (
         <div className="mb-2">
           <button onClick={() => setShowReasoning((v) => !v)} className="inline-flex items-center gap-1 text-[12.5px] text-dim hover:text-ink">
