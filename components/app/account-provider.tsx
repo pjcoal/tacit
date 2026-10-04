@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { apiJson } from "@/lib/utils";
+import type { VaultFile } from "@/lib/vault";
 
 export interface AccountState {
   createdAt: string;
@@ -30,20 +31,11 @@ export function useAccount() {
   return c;
 }
 
-export function downloadRecoveryFile(appName: string, secret: string) {
-  const body = [
-    `${appName} account recovery key`,
-    "",
-    secret,
-    "",
-    "Keep this file private. Anyone with this key can use your credits.",
-    "There is no email or password reset: this key is the only way to restore your account on another device.",
-    `Created: ${new Date().toISOString()}`,
-  ].join("\n");
-  const url = URL.createObjectURL(new Blob([body], { type: "text/plain" }));
+export function downloadVaultFile(appName: string, vault: VaultFile) {
+  const url = URL.createObjectURL(new Blob([JSON.stringify(vault, null, 2)], { type: "application/json" }));
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${appName.toLowerCase()}-recovery-key.txt`;
+  a.download = `${appName.toLowerCase()}-vault.json`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

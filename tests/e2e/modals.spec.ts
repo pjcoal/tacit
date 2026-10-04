@@ -11,9 +11,15 @@ test.describe("wallet, credits and token modals", () => {
     await expect(page.locator("input[type=password]")).toHaveCount(0);
   });
 
-  test("account creation shows the recovery key once, then the credits purchase dialog opens", async ({ page }) => {
+  test("account creation encrypts a vault file, then the credits purchase dialog opens", async ({ page }) => {
     await page.goto("/app/credits");
     await page.getByTestId("create-account").click();
+    await page.getByLabel("Passphrase", { exact: true }).fill("correct horse battery");
+    await page.getByLabel("Confirm passphrase").fill("correct horse battery");
+    const download = page.waitForEvent("download");
+    await page.getByTestId("create-vault").click();
+    expect((await download).suggestedFilename()).toBe("veil-vault.json");
+    await page.getByText("Show the unencrypted key").click();
     await expect(page.getByTestId("recovery-key")).toContainText(/^veil_acct_/);
     await page.getByRole("checkbox").check();
     await page.getByTestId("saved-key").click();
@@ -25,10 +31,37 @@ test.describe("wallet, credits and token modals", () => {
     await expect(dialog.getByRole("button", { name: "Connect wallet" })).toBeVisible();
   });
 
+  test("the vault file restores the account only with the right passphrase", async ({ page }) => {
+    await page.goto("/app/credits");
+    await page.getByTestId("create-account").click();
+    await page.getByLabel("Passphrase", { exact: true }).fill("correct horse battery");
+    await page.getByLabel("Confirm passphrase").fill("correct horse battery");
+    const download = page.waitForEvent("download");
+    await page.getByTestId("create-vault").click();
+    const vaultPath = await (await download).path();
+    await page.getByRole("checkbox").check();
+    await page.getByTestId("saved-key").click();
+    await expect(page.getByTestId("balance-card")).toBeVisible();
+
+    // Sign this browser out, then restore from the file.
+    await page.context().clearCookies();
+    await page.reload();
+    await page.locator("input[type=file]").setInputFiles(vaultPath);
+    await page.getByLabel("Vault passphrase").fill("wrong passphrase");
+    await page.getByRole("button", { name: "Unlock" }).click();
+    await expect(page.getByTestId("account-gate")).toContainText("Wrong passphrase");
+    await page.getByLabel("Vault passphrase").fill("correct horse battery");
+    await page.getByRole("button", { name: "Unlock" }).click();
+    await expect(page.getByTestId("balance-card")).toBeVisible();
+  });
+
   test("API keys are shown once and can be revoked", async ({ page }) => {
     // Fresh browser context → no account yet; the API page offers to create one.
     await page.goto("/app/developers");
     await page.getByTestId("create-account").click();
+    await page.getByLabel("Passphrase", { exact: true }).fill("correct horse battery");
+    await page.getByLabel("Confirm passphrase").fill("correct horse battery");
+    await page.getByTestId("create-vault").click();
     await page.getByRole("checkbox").check();
     await page.getByTestId("saved-key").click();
     await page.getByTestId("create-key").click();

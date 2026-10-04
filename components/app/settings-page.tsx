@@ -89,14 +89,14 @@ export function SettingsPage() {
         <section className="card px-5">
           <Row
             title={account ? "Forget account on this device" : "No account on this device"}
-            description={account ? "Signs this browser out. Your credits stay on the account and can be restored with your recovery key." : "Create one from Credits when you need to buy credits or API keys."}
+            description={account ? "Signs this browser out. Your credits stay on the account and can be restored with your vault file and passphrase." : "Create one from Credits when you need to buy credits or API keys."}
           >
             {account ? (
               <Button
                 variant="secondary"
                 size="sm"
                 onClick={async () => {
-                  if (!confirm("Make sure you have your recovery key. Forget this account on this device?")) return;
+                  if (!confirm("Make sure you have your vault file and passphrase. Forget this account on this device?")) return;
                   await forget();
                   setDone("Account removed from this device.");
                 }}

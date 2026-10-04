@@ -114,7 +114,7 @@ export function CreditsSection() {
               <CheckCircle2 size={16} />
             </span>
             <div className="pt-2.5 text-[14px] text-ink-2">
-              Credits land on a pseudonymous account. No email, no name — just a recovery key you keep.
+              Credits land on a pseudonymous account. No email, no name — just an encrypted vault file you keep.
             </div>
           </li>
         </ol>

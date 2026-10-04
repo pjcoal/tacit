@@ -68,7 +68,7 @@ export default function PrivacyPage() {
           <div className="card p-6">
             <h2 className="text-[17px] font-semibold">Stored on our servers</h2>
             <ul className="mt-4 list-disc space-y-2 pl-5 text-[14px] text-ink-2">
-              <li>Accounts: a random id and the SHA-256 hash of your recovery key. No email, name or password.</li>
+              <li>Accounts: a random id and the SHA-256 hash of your account key. No email, name or password. Your vault passphrase never leaves your browser.</li>
               <li>Credit ledger and usage counts: model, tokens, credits, time. No prompts or replies.</li>
               <li>Payments: the paying wallet address, amount, and transaction signature (needed to verify and to prevent replay). Payments are public on Solana anyway.</li>
               <li>API keys: SHA-256 hashes, names, and last-used time.</li>
