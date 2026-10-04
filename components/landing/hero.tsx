@@ -28,7 +28,7 @@ const TRUST = [
 export function Hero() {
   return (
     <section className="relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
-      <div aria-hidden className="grid-paper pointer-events-none absolute inset-x-0 top-0 h-[520px] [mask-image:linear-gradient(to_bottom,black,transparent)] opacity-70" />
+      <div aria-hidden className="hero-art pointer-events-none absolute inset-x-0 top-0 h-[560px] md:h-[760px]" />
       <div className="container-x relative">
         <p className="eyebrow flex items-center gap-2">
           <span className="dot bg-accent" /> Private AI · Settled on Solana

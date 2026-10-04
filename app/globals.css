@@ -5,6 +5,7 @@
 /* ------------------------------------------------------------------ */
 :root {
   --bg: #f5f5f1;
+  --hero-art-opacity: 0.09;
   --bg-2: #ecece6;
   --surface: #fbfbf9;
   --sunken: #efefea;
@@ -40,6 +41,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0d0e10;
+    --hero-art-opacity: 0.24;
     --bg-2: #141518;
     --surface: #131417;
     --sunken: #0a0b0c;
@@ -68,6 +70,7 @@
 
 :root[data-theme="dark"] {
   --bg: #0d0e10;
+  --hero-art-opacity: 0.24;
   --bg-2: #141518;
   --surface: #131417;
   --sunken: #0a0b0c;
@@ -250,6 +253,14 @@ button:disabled {
     height: 6px;
     border-radius: 999px;
     flex: none;
+  }
+
+  /* Hero artwork, faded into the page like the old grid. */
+  .hero-art {
+    background: url("/hero-crowd.webp") center 30% / cover no-repeat;
+    opacity: var(--hero-art-opacity);
+    mask-image: radial-gradient(ellipse 85% 75% at 50% 25%, black 30%, transparent 75%), linear-gradient(to bottom, black 40%, transparent);
+    mask-composite: intersect;
   }
 
   .grid-paper {
