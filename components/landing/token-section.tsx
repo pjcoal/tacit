@@ -114,9 +114,8 @@ export function TokenSection() {
               <span className="text-white/60">Shrink the supply.</span>
             </h2>
             <p className="mt-6 max-w-[54ch] text-[16.5px] leading-relaxed text-panel-dim">
-              {sym} is how you pay for Veil at a discount — and every token spent is burned, so using the product takes supply out of
-              circulation. A share of platform revenue is set aside to buy back and burn more; that part is planned, and labelled that way
-              until it&apos;s live.
+              Pay for Veil with {sym}{burnPct > 0 ? ` and get ${burnPct}% off` : ""}. Every token you pay with is burned on the spot, so the more
+              people build on Veil, the smaller the supply gets. Next: a share of revenue goes to buying back and burning even more.
             </p>
             <div className="mt-8 flex flex-wrap gap-2.5">
               <button
