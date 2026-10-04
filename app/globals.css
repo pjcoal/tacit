@@ -476,3 +476,9 @@ button:disabled {
 em.font-serif {
   font-family: var(--font-serif-italic);
 }
+
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
