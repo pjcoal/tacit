@@ -1,6 +1,6 @@
 "use client";
 
-import { useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 
 // Deterministic particles shed from the lower half of the mark.
 const PARTICLES = Array.from({ length: 22 }, (_, i) => {

@@ -1,10 +1,11 @@
+import { AppShowcase } from "@/components/landing/app-showcase";
 import { CreditsSection } from "@/components/landing/credits-section";
 import { Hero } from "@/components/landing/hero";
 import { ModelsSection } from "@/components/landing/models-section";
 import { Nav } from "@/components/landing/nav";
 import { Pricing } from "@/components/landing/pricing";
 import { PrivacyDemo } from "@/components/landing/privacy-demo";
-import { AppSection, ApiSection, CodeSection, ConnectorSection, FinalCta, Footer, PrivacyBoundary, Solutions } from "@/components/landing/sections";
+import { ApiSection, CodeSection, ConnectorSection, FinalCta, Footer, PrivacyBoundary, Solutions } from "@/components/landing/sections";
 import { Showcase } from "@/components/landing/showcase";
 import { TokenSection } from "@/components/landing/token-section";
 import { Section, SectionHeader } from "@/components/ui/section";
@@ -47,7 +48,7 @@ export default function Home() {
         </Section>
 
         <Solutions />
-        <AppSection />
+        <AppShowcase />
         <CodeSection />
         <PrivacyBoundary />
         <ConnectorSection />

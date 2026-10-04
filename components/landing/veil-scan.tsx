@@ -1,6 +1,7 @@
 "use client";
 
-import { AnimatePresence, m, useInView, useReducedMotion } from "framer-motion";
+import { AnimatePresence, m, useInView } from "framer-motion";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { Check, Lock } from "lucide-react";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";

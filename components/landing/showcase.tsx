@@ -1,6 +1,7 @@
 "use client";
 
-import { AnimatePresence, m, useReducedMotion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { ArrowRight, Check, ChevronDown, Code2, Film, ImageIcon, MessageSquare, Plug, Shield, Wallet } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -15,7 +16,7 @@ const TABS: Array<{ id: TabId; label: string; icon: typeof MessageSquare; title:
     label: "Chat",
     icon: MessageSquare,
     title: "A composer that knows what it's sending.",
-    body: "Switch models mid-conversation, set reasoning depth, attach files, and see a receipt for every message showing exactly what left your device.",
+    body: "Auto picks the right model for each message. Attach files, pick a privacy mode, and see a receipt for every message showing exactly what left your device.",
     points: ["Streaming with stop and regenerate", "Markdown, tables and highlighted code", "Per-message privacy receipts", "Text and image attachments"],
     href: "/app",
     cta: "Open chat",

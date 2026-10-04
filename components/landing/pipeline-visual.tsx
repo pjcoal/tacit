@@ -1,6 +1,7 @@
 "use client";
 
-import { m, useInView, useReducedMotion } from "framer-motion";
+import { m, useInView } from "framer-motion";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { useEffect, useRef, useState } from "react";
 import { WithOriginals, WithPlaceholders } from "@/components/privacy/highlight";
 import { cn } from "@/lib/utils";

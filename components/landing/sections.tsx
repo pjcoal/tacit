@@ -4,22 +4,14 @@ import {
   Bot,
   Building2,
   Check,
-  Coins,
   Database,
-  FileCode2,
   FolderTree,
-  HardDrive,
-  Image as ImageIcon,
   Lock,
   MessageSquare,
   Minus,
   PenTool,
-  Plus,
   Search,
   Server,
-  Settings,
-  Shield,
-  Sparkles,
   Terminal,
   Wallet,
   X,
@@ -66,94 +58,6 @@ export function Solutions() {
 }
 
 /* ------------------------------------------------------------------ */
-export function AppSection() {
-  const { appName } = getPublicConfig();
-  const callouts = [
-    { icon: HardDrive, title: "History in IndexedDB", body: "Conversations, images and projects are stored in this browser. Export or wipe them any time." },
-    { icon: Shield, title: "Receipts on every message", body: "Open any message to compare what you wrote with what the model received." },
-    { icon: Sparkles, title: "Models side by side", body: "Change model, reasoning level or privacy mode without starting over." },
-    { icon: Wallet, title: "Wallet only when it matters", body: "Free chat needs nothing. Connect a wallet to pay, verify token holdings or use the connector." },
-  ];
-  return (
-    <Section id="app">
-      <SectionHeader
-        index="05"
-        eyebrow="The app"
-        title="Quiet by default."
-        lead="No feed, no ads, no profile. A sidebar of your own conversations, a composer, and the controls you actually use."
-      />
-      <Reveal delay={0.05} className="mt-14">
-        <div aria-hidden inert className="card pointer-events-none overflow-hidden shadow-[var(--shadow-pop)] select-none">
-          <div className="grid min-h-[420px] grid-cols-1 md:grid-cols-[230px_1fr]">
-            <aside className="hidden flex-col border-r border-line bg-sunken p-3 md:flex">
-              <Logo name={appName} className="px-2 py-1.5" />
-              <span className="mt-4 flex h-9 items-center gap-2 rounded-lg border border-line bg-surface px-3 text-[13px]">
-                <Plus size={14} /> New chat
-              </span>
-              <p className="eyebrow mt-5 px-2">This device</p>
-              {["New York itinerary", "Lease reminder", "Asthma questions", "Token taxes 2025", "Landing page copy"].map((t, i) => (
-                <span key={t} className={`mt-1 truncate rounded-md px-2 py-1.5 text-[13px] ${i === 0 ? "bg-surface text-ink" : "text-ink-2"}`}>
-                  {t}
-                </span>
-              ))}
-              <div className="mt-auto space-y-1 pt-4 text-[13px] text-ink-2">
-                {[
-                  [ImageIcon, "Image"],
-                  [FileCode2, "Code"],
-                  [Coins, "Credits"],
-                  [Settings, "Settings"],
-                ].map(([I, l]) => {
-                  const Icon = I as typeof ImageIcon;
-                  return (
-                    <span key={l as string} className="flex items-center gap-2 px-2 py-1">
-                      <Icon size={14} /> {l as string}
-                    </span>
-                  );
-                })}
-              </div>
-            </aside>
-            <div className="flex flex-col p-5 md:p-8">
-              <div className="ml-auto max-w-md rounded-2xl rounded-br-md bg-sunken px-4 py-3 text-[14px]">
-                Explain the tax treatment of selling tokens I bought in March, I live in Cork.
-              </div>
-              <div className="mt-6 max-w-xl space-y-3 text-[14px] leading-relaxed">
-                <p>
-                  In <span className="chip-ph">[CITY_1]</span> — that is, in Ireland — gains on crypto disposals are generally subject to Capital Gains Tax.
-                  A few things decide what you owe:
-                </p>
-                <ul className="list-disc space-y-1 pl-5 text-ink-2">
-                  <li>Your acquisition cost and the sale price in euro</li>
-                  <li>The annual personal exemption</li>
-                  <li>Which payment window the sale falls in</li>
-                </ul>
-              </div>
-              <div className="mt-auto rounded-xl border border-line bg-surface p-3 pt-3">
-                <div className="text-[13px] text-dim">Reply…</div>
-                <div className="mt-3 flex items-center gap-1.5 text-[12px]">
-                  <span className="rounded-full border border-line px-2.5 py-1">Auto</span>
-                  <span className="rounded-full border border-accent-line bg-accent-soft px-2.5 py-1 text-accent-ink">Smart</span>
-                  <span className="ml-auto grid h-8 w-8 place-items-center rounded-lg bg-ink text-bg">
-                    <ArrowRight size={14} />
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Reveal>
-      <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-        {callouts.map((c, i) => (
-          <Reveal key={c.title} delay={i * 0.05}>
-            <c.icon size={18} strokeWidth={1.6} />
-            <h3 className="mt-3 text-[15px] font-semibold">{c.title}</h3>
-            <p className="mt-1.5 text-[14px] leading-relaxed text-ink-2">{c.body}</p>
-          </Reveal>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
 /* ------------------------------------------------------------------ */
 export function CodeSection() {
   const steps = [
