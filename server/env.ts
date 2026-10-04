@@ -46,7 +46,7 @@ const boolFromEnv = (def: boolean) =>
 const schema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 
-  NEXT_PUBLIC_APP_NAME: optionalString.transform((v) => v ?? "Tacit"),
+  NEXT_PUBLIC_APP_NAME: optionalString.transform((v) => v ?? "Veil"),
   NEXT_PUBLIC_APP_URL: optionalUrl.transform((v) => (v ?? "http://localhost:3000").replace(/\/$/, "")),
 
   SOLANA_NETWORK: z.enum(["devnet", "testnet", "mainnet-beta"]).default("devnet"),
@@ -54,8 +54,8 @@ const schema = z.object({
   NEXT_PUBLIC_SOLANA_RPC_URL: optionalUrl,
 
   PROJECT_TOKEN_MINT: optionalPubkey,
-  PROJECT_TOKEN_SYMBOL: optionalString.transform((v) => v ?? "TACIT"),
-  PROJECT_TOKEN_NAME: optionalString.transform((v) => v ?? "Tacit"),
+  PROJECT_TOKEN_SYMBOL: optionalString.transform((v) => v ?? "VEIL"),
+  PROJECT_TOKEN_NAME: optionalString.transform((v) => v ?? "Veil"),
   PROJECT_TOKEN_DECIMALS: intFromEnv(6, 0, 12),
   PUMP_URL: optionalUrl,
 

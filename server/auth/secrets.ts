@@ -19,11 +19,11 @@ export function safeEqual(a: string, b: string): boolean {
   return ab.length === bb.length && timingSafeEqual(ab, bb);
 }
 
-export const ACCOUNT_SECRET_PREFIX = "tacit_acct_";
-export const API_KEY_PREFIX = "tacit_sk_";
+export const ACCOUNT_SECRET_PREFIX = "veil_acct_";
+export const API_KEY_PREFIX = "veil_sk_";
 
-const ACCOUNT_RE = /^tacit_acct_[A-Za-z0-9_-]{43}$/;
-const API_KEY_RE = /^tacit_sk_[A-Za-z0-9_-]{43}$/;
+const ACCOUNT_RE = /^veil_acct_[A-Za-z0-9_-]{43}$/;
+const API_KEY_RE = /^veil_sk_[A-Za-z0-9_-]{43}$/;
 
 export const isAccountSecret = (s: string) => ACCOUNT_RE.test(s);
 export const isApiKey = (s: string) => API_KEY_RE.test(s);

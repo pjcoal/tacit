@@ -138,7 +138,7 @@ export const DEFAULT_SETTINGS: Settings = {
   solanaWrites: "ask",
 };
 
-interface TacitDB extends DBSchema {
+interface VeilDB extends DBSchema {
   conversations: { key: string; value: Conversation; indexes: { "by-updated": number } };
   messages: { key: string; value: StoredMessage; indexes: { "by-conversation": [string, number] } };
   images: { key: string; value: StoredImage; indexes: { "by-created": number } };
@@ -147,10 +147,11 @@ interface TacitDB extends DBSchema {
   kv: { key: string; value: unknown };
 }
 
-let dbPromise: Promise<IDBPDatabase<TacitDB>> | null = null;
+let dbPromise: Promise<IDBPDatabase<VeilDB>> | null = null;
 
+// The IndexedDB name predates the rename to Veil; keeping it preserves existing local history.
 export function db() {
-  dbPromise ??= openDB<TacitDB>("tacit", 1, {
+  dbPromise ??= openDB<VeilDB>("tacit", 1, {
     upgrade(d) {
       d.createObjectStore("conversations", { keyPath: "id" }).createIndex("by-updated", "updatedAt");
       d.createObjectStore("messages", { keyPath: "id" }).createIndex("by-conversation", ["conversationId", "createdAt"]);

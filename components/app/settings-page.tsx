@@ -62,7 +62,7 @@ export function SettingsPage() {
                 const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));
                 const a = document.createElement("a");
                 a.href = url;
-                a.download = `tacit-export-${new Date().toISOString().slice(0, 10)}.json`;
+                a.download = `veil-export-${new Date().toISOString().slice(0, 10)}.json`;
                 a.click();
                 setTimeout(() => URL.revokeObjectURL(url), 1000);
               }}

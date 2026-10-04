@@ -14,7 +14,7 @@ test.describe("wallet, credits and token modals", () => {
   test("account creation shows the recovery key once, then the credits purchase dialog opens", async ({ page }) => {
     await page.goto("/app/credits");
     await page.getByTestId("create-account").click();
-    await expect(page.getByTestId("recovery-key")).toContainText(/^tacit_acct_/);
+    await expect(page.getByTestId("recovery-key")).toContainText(/^veil_acct_/);
     await page.getByRole("checkbox").check();
     await page.getByTestId("saved-key").click();
     await expect(page.getByTestId("balance-card")).toContainText("0");
@@ -32,7 +32,7 @@ test.describe("wallet, credits and token modals", () => {
     await page.getByRole("checkbox").check();
     await page.getByTestId("saved-key").click();
     await page.getByTestId("create-key").click();
-    await expect(page.getByTestId("new-key")).toContainText(/^tacit_sk_/);
+    await expect(page.getByTestId("new-key")).toContainText(/^veil_sk_/);
     await page.getByRole("button", { name: "Done" }).click();
     await expect(page.getByTestId("key-list")).toContainText("Active");
     page.once("dialog", (d) => d.accept());

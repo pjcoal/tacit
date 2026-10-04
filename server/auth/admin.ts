@@ -4,7 +4,7 @@ import { env } from "@/server/env";
 import { HttpError } from "@/server/http";
 import { signToken, verifyToken } from "@/server/signed";
 
-export const ADMIN_COOKIE = "tacit_admin";
+export const ADMIN_COOKIE = "veil_admin";
 const SESSION_SECONDS = 8 * 60 * 60;
 
 export function adminConfigured(): { ok: boolean; reason: string | null } {

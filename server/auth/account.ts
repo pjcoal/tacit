@@ -12,7 +12,7 @@ import { ACCOUNT_SECRET_PREFIX, isAccountSecret, randomToken, sha256Hex } from "
  * (in an httpOnly cookie and in a recovery file they download once).
  */
 
-export const ACCOUNT_COOKIE = "tacit_acct";
+export const ACCOUNT_COOKIE = "veil_acct";
 
 export async function createAccount(db: Db): Promise<{ id: string; secret: string }> {
   const secret = randomToken(ACCOUNT_SECRET_PREFIX);

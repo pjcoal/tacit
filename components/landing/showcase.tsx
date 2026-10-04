@@ -102,7 +102,7 @@ function ChatPreview() {
   const answer = "Here's a 3-day plan for [CITY_1]. Day one: the old town and a slow lunch; day two: the coast by train; day three: museums, then dinner near [ADDRESS_1].";
   const typed = useTyped(answer);
   return (
-    <Frame title="tacit / chat">
+    <Frame title="veil / chat">
       <div className="space-y-4 p-4 sm:p-5">
         <div className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-sunken px-4 py-3 text-[13.5px]">
           Plan three days in New York for me — we&apos;re staying at 88 Orchard Street.
@@ -143,7 +143,7 @@ const ART = [
 
 function ImagePreview() {
   return (
-    <Frame title="tacit / image">
+    <Frame title="veil / image">
       <div className="p-4 sm:p-5">
         <div className="flex flex-wrap items-center gap-1.5">
           <Pill>FLUX 1.1 Pro</Pill>
@@ -178,7 +178,7 @@ function ImagePreview() {
 function VideoPreview() {
   const reduce = useReducedMotion();
   return (
-    <Frame title="tacit / video">
+    <Frame title="veil / video">
       <div className="p-4 sm:p-5">
         <div className="relative aspect-video overflow-hidden rounded-xl bg-panel">
           <m.div
@@ -211,7 +211,7 @@ function VideoPreview() {
 
 function ConnectPreview() {
   return (
-    <Frame title="tacit / connector">
+    <Frame title="veil / connector">
       <div className="space-y-3 p-4 text-[13px] sm:p-5">
         <div className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-sunken px-4 py-2.5">Send 0.1 SOL to my brother&apos;s wallet and show my largest tokens.</div>
         <div className="space-y-1.5 font-mono text-[11.5px]">
@@ -247,7 +247,7 @@ function ConnectPreview() {
 
 function CodePreview() {
   return (
-    <Frame title="tacit / code">
+    <Frame title="veil / code">
       <div className="grid grid-cols-[110px_1fr] text-[12px] sm:grid-cols-[130px_1fr]">
         <ul className="space-y-1 border-r border-line bg-sunken p-3 font-mono text-[11.5px] text-ink-2">
           <li className="text-ink">▾ project</li>

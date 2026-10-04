@@ -52,7 +52,7 @@ export function DevelopersPage() {
   const model = models?.chat.find((m) => m.available && m.id !== "auto")?.id ?? "auto";
   const examples = {
     curl: `curl ${base}/chat/completions \\
-  -H "Authorization: Bearer $TACIT_API_KEY" \\
+  -H "Authorization: Bearer $VEIL_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
     "model": "${model}",
@@ -63,7 +63,7 @@ export function DevelopersPage() {
     python: `import os
 from openai import OpenAI
 
-client = OpenAI(base_url="${base}", api_key=os.environ["TACIT_API_KEY"])
+client = OpenAI(base_url="${base}", api_key=os.environ["VEIL_API_KEY"])
 
 stream = client.chat.completions.create(
     model="${model}",
@@ -75,7 +75,7 @@ for chunk in stream:
     print(chunk.choices[0].delta.content or "", end="")`,
     js: `import OpenAI from "openai";
 
-const client = new OpenAI({ baseURL: "${base}", apiKey: process.env.TACIT_API_KEY });
+const client = new OpenAI({ baseURL: "${base}", apiKey: process.env.VEIL_API_KEY });
 
 const res = await client.chat.completions.create({
   model: "${model}",
@@ -185,7 +185,7 @@ console.log(res.choices[0].message.content);`,
           <div className="mt-4 space-y-4 text-[14px] leading-relaxed text-ink-2">
             <p>
               <strong className="text-ink">Base URL</strong> <code className="rounded bg-sunken px-1.5 py-0.5 font-mono text-[12.5px]">{base}</code>. Authenticate with{" "}
-              <code className="rounded bg-sunken px-1.5 py-0.5 font-mono text-[12.5px]">Authorization: Bearer tacit_sk_…</code>.
+              <code className="rounded bg-sunken px-1.5 py-0.5 font-mono text-[12.5px]">Authorization: Bearer veil_sk_…</code>.
             </p>
             <ul className="list-disc space-y-1.5 pl-5">
               <li>

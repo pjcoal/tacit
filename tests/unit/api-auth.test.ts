@@ -17,7 +17,7 @@ describe("API keys", () => {
     const a = generateApiKey();
     const b = generateApiKey();
     expect(a.key).not.toBe(b.key);
-    expect(a.key).toMatch(/^tacit_sk_[A-Za-z0-9_-]{43}$/);
+    expect(a.key).toMatch(/^veil_sk_[A-Za-z0-9_-]{43}$/);
     const created = await createApiKey(db, accountId, "ci");
     const rows = await db.select().from(apiKeys);
     expect(rows[0].keyHash).toBe(sha256Hex(created.key));

@@ -1,4 +1,4 @@
-# Tacit
+# Veil
 
 A privacy-first AI platform, settled on Solana. Chat, image, video and a small coding agent behind one interface; personal details are replaced with placeholders **in the browser** before a request leaves it, conversation history lives in IndexedDB, and credits are bought with a wallet transaction that the server verifies on-chain.
 
