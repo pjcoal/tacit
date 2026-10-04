@@ -14,10 +14,11 @@ const pick = (p: string[], type: string) => p.find((x) => x.startsWith(`[${type}
 
 const PRESETS = [
   {
-    id: "dinner",
-    label: "Restaurants",
-    text: "Find restaurants near my home in New York and send the shortlist to Elena.",
-    reply: (p: string[]) => `Here are four places within walking distance in ${p[0] ?? "the area"}. I've drafted a short note for ${p[1] ?? "them"} with the shortlist.`,
+    id: "deploy",
+    label: "Deploy",
+    text: "Write a deploy script for Kestrel. The server is at 84.203.17.9 and the API key is sk-proj-9fQ2LmX8vT4rB7nK1pZ6wY3cAbCd. Ping Tom when it's done.",
+    reply: (p: string[]) =>
+      `Here's the deploy script for ${pick(p, "NAME") ?? "Kestrel"}. It connects to ${pick(p, "IP") ?? "your server"}, reads the API key from an environment variable instead of hard-coding it, and messages ${pick(p, "PERSON") ?? "the team"} at the end.`,
   },
   {
     id: "transfer",
@@ -26,11 +27,10 @@ const PRESETS = [
     reply: (p: string[]) => `I've prepared a 2 SOL transfer to ${p[0] ?? "that address"} for you to review in your wallet, plus a note for ${p[1] ?? "them"} about the ${p[2] ?? ""} trip.`,
   },
   {
-    id: "deploy",
-    label: "Deploy",
-    text: "Write a deploy script for Kestrel. The server is at 84.203.17.9 and the API key is sk-proj-9fQ2LmX8vT4rB7nK1pZ6wY3cAbCd. Ping Tom when it's done.",
-    reply: (p: string[]) =>
-      `Here's the deploy script for ${pick(p, "NAME") ?? "Kestrel"}. It connects to ${pick(p, "IP") ?? "your server"}, reads the API key from an environment variable instead of hard-coding it, and messages ${pick(p, "PERSON") ?? "the team"} at the end.`,
+    id: "dinner",
+    label: "Restaurants",
+    text: "Find restaurants near my home in New York and send the shortlist to Elena.",
+    reply: (p: string[]) => `Here are four places within walking distance in ${p[0] ?? "the area"}. I've drafted a short note for ${p[1] ?? "them"} with the shortlist.`,
   },
   {
     id: "email",
