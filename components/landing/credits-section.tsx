@@ -27,7 +27,6 @@ export function CreditsSection() {
   const [usd, setUsd] = useState(packages[1] ?? packages[0] ?? 25);
   const [currency, setCurrency] = useState<PaymentCurrency>("USDC");
   const c = creditsForPackage({ usd, currency, creditsPerUsd: cfg.payments.creditsPerUsd, tokenBonusBps: cfg.payments.tokenBonusBps });
-  const bonusPct = cfg.payments.tokenBonusBps / 100;
 
   const steps = [
     {
@@ -83,7 +82,7 @@ export function CreditsSection() {
               options={currencyOptions(cfg)}
             />
             <span className="text-[12.5px] text-dim">
-              {cfg.payments.burnDiscountBps > 0 ? `${cfg.payments.burnDiscountBps / 100}% off when you burn $${cfg.token.symbol}` : bonusPct > 0 ? `+${bonusPct}% credits with $${cfg.token.symbol}` : ""}
+              {cfg.payments.burnDiscountBps > 0 ? `${cfg.payments.burnDiscountBps / 100}% off with $${cfg.token.symbol} — paid by burning it` : ""}
             </span>
           </div>
           <ButtonLink href={`/app/credits?package=${usd}&currency=${currency}`} size="lg" className="mt-7 w-full">

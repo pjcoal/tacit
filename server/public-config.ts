@@ -73,7 +73,8 @@ export function getPublicConfig(): PublicConfig {
     payments: {
       enabled: disabledReason === null,
       disabledReason,
-      currencies: { SOL: true, USDC: true, TOKEN: Boolean(mint), BURN: Boolean(mint) },
+      // $VEIL is spent by burning it; transfers of the token to the treasury are not offered.
+      currencies: { SOL: true, USDC: true, TOKEN: false, BURN: Boolean(mint) },
       creditsPerUsd: e.CREDITS_PER_USD,
       tokenBonusBps: e.TOKEN_CREDIT_BONUS_BPS,
       tokenPlanDiscountBps: e.TOKEN_PLAN_DISCOUNT_BPS,

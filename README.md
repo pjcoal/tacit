@@ -35,7 +35,7 @@ With no `DATABASE_URL`, development uses an embedded PGlite database in `.data/`
 | Code agent | ✅ Files streamed as fenced blocks → project tree, log, sandboxed live preview. Remote runtimes: interface only (`lib/code/sandbox.ts`), shown as *not configured* |
 | Solana wallet | ✅ Wallet-standard detection (Phantom, Solflare, Backpack…), optional WalletConnect, balances, disconnect |
 | Solana connector | ✅ Reads run in the browser; transfers become previews the user approves in their wallet |
-| Credits & plans | ✅ SOL / USDC / project-token payments, server-side on-chain verification, replay protection, fixed-duration plans (no recurring charges) |
+| Credits & plans | ✅ SOL / USDC payments and $VEIL burns, server-side on-chain verification, replay protection, fixed-duration plans (no recurring charges) |
 | Token | ✅ Pump bonding curve + PumpSwap quotes and unsigned buy transactions via the official SDKs; buy modal; token info module |
 | API | ✅ `POST /api/v1/chat/completions` (OpenAI-compatible, streaming), `GET /api/v1/models`, hashed keys shown once, revocation, rate limits, usage dashboard |
 | Admin | ✅ Wallet-signed sign-in; token launch (`create_v2`); revenue ledger → buyback proposal → review → treasury-signed execution → on-chain-verified log; SPL burn |
@@ -96,7 +96,6 @@ Replays fail on the unique signature; double-fulfilment fails on the intent stat
 ### Token utility
 
 - **Burn for credits** — users burn $VEIL (an SPL `burnChecked` from their own wallet, tagged with the intent reference) and get credits at `TOKEN_BURN_DISCOUNT_BPS` off the USDC price. Verified on-chain like any payment; excluded from revenue. Enabled once `PROJECT_TOKEN_MINT` is set.
-- **Credit bonus** for token payments (`TOKEN_CREDIT_BONUS_BPS`) and **plan discount** (`TOKEN_PLAN_DISCOUNT_BPS`) — active.
 - **Token-gated benefit** — holders (≥ `TOKEN_GATE_HOLDER_MIN`) prove ownership with a signed message (no transaction) for 3× free messages for 24 h. Only "holder until …" is stored.
 - **Buyback & burn** — admin-only and manual: revenue ledger → proposal (`BUYBACK_ALLOCATION_BPS` of net) → approve/reject → unsigned Pump/PumpSwap buy with the treasury as payer → treasury wallet signs → server verifies on-chain and logs. Burns are SPL `burnChecked` from the treasury ATA. Nothing is scheduled or automatic. The landing page labels this **Planned** unless `TOKEN_BUYBACK_STATUS=active`.
 

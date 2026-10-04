@@ -13,7 +13,6 @@ import { cn, formatUsd } from "@/lib/utils";
 export function Pricing() {
   const cfg = useConfig();
   const [currency, setCurrency] = useState<PaymentCurrency>("USDC");
-  const discount = cfg.payments.tokenPlanDiscountBps / 100;
 
   return (
     <div>
@@ -25,7 +24,7 @@ export function Pricing() {
           options={currencyOptions(cfg)}
         />
         <p className="text-[13px] text-ink-2">
-          {cfg.payments.burnDiscountBps > 0 ? `Burn $${cfg.token.symbol} for ${cfg.payments.burnDiscountBps / 100}% off` : ""}{discount > 0 ? `${cfg.payments.burnDiscountBps > 0 ? ", or pay with it for" : ""} ${discount}% off. ` : ". "}Fixed-duration access — nothing renews or charges automatically.
+          {cfg.payments.burnDiscountBps > 0 ? `${cfg.payments.burnDiscountBps / 100}% off with $${cfg.token.symbol}, paid by burning it. ` : ""}Fixed-duration access — nothing renews or charges automatically.
         </p>
       </div>
 

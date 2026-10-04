@@ -8,10 +8,10 @@ export function currencyOptions(cfg: PublicConfig): SegmentOption<PaymentCurrenc
   return [
     { value: "USDC", label: "USDC" },
     { value: "SOL", label: "SOL" },
-    { value: "TOKEN", label: `$${cfg.token.symbol}`, disabled: !cfg.payments.currencies.TOKEN, title: cfg.payments.currencies.TOKEN ? undefined : later },
     {
+      // Paying with $VEIL means burning it.
       value: "BURN",
-      label: `Burn $${cfg.token.symbol}`,
+      label: `$${cfg.token.symbol}`,
       disabled: !cfg.payments.currencies.BURN,
       title: cfg.payments.currencies.BURN ? `Burn $${cfg.token.symbol} for credits at ${cfg.payments.burnDiscountBps / 100}% off` : later,
     },

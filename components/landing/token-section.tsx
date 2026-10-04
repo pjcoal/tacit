@@ -97,9 +97,6 @@ export function TokenSection() {
               ? `Burn $${cfg.token.symbol} for credits at ${cfg.payments.burnDiscountBps / 100}% off the USDC price — supply goes down with every purchase${cfg.token.mint ? "" : " (live at launch)"}.`
               : "Not enabled"}
           </Fact>
-          <Fact label="Credit bonus">
-            {cfg.payments.tokenBonusBps > 0 ? `+${cfg.payments.tokenBonusBps / 100}% credits when paying with $${cfg.token.symbol}` : "None configured"}
-          </Fact>
         </dl>
 
         <div className="card flex flex-col p-6">

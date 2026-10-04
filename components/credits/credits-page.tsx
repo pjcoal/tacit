@@ -28,7 +28,7 @@ export function CreditsPage() {
   const { account, loading } = useAccount();
   const [chosenCurrency, setCurrency] = useState<PaymentCurrency>(() => {
     const c = params.get("currency");
-    return c === "SOL" || c === "USDC" || c === "TOKEN" || c === "BURN" ? c : "USDC";
+    return c === "SOL" || c === "USDC" ? c : c === "BURN" || c === "TOKEN" ? "BURN" : "USDC";
   });
   const [usd, setUsd] = useState<number>(() => Number(params.get("package")) || cfg.payments.packagesUsd[1] || cfg.payments.packagesUsd[0]);
   const [product, setProduct] = useState<Product | null>(null);
