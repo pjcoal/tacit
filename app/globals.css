@@ -499,11 +499,6 @@ em.font-serif {
     stroke-dashoffset: 0;
   }
 }
-@keyframes cf-out {
-  to {
-    stroke-dashoffset: -21;
-  }
-}
 @keyframes cf-pulse {
   from {
     transform: scale(1);
