@@ -20,18 +20,20 @@ export const googleProvider: ChatProvider = {
         ],
       }));
 
+    // Gemini 3+ (and the -latest aliases) take a thinking *level*; older models take a token budget.
+    // Gemini 3 Flash can't fully disable thinking, so "off" maps to its lowest supported level.
+    const levelBased = /^gemini-([3-9]|\d{2})|-latest$/.test(req.model.upstream);
     const thinkingBudget = { off: 0, low: 2048, medium: 8192, high: 24576 }[req.reasoning];
     const isPro = req.model.upstream.includes("pro");
+    const thinkingConfig = levelBased
+      ? { thinkingLevel: req.reasoning === "off" ? "low" : req.reasoning, includeThoughts: req.reasoning !== "off" }
+      : { thinkingBudget: isPro && thinkingBudget === 0 ? 128 : thinkingBudget, includeThoughts: thinkingBudget > 0 };
     const body = {
       contents,
       systemInstruction: { parts: [{ text: req.system }] },
       generationConfig: {
-        maxOutputTokens: (req.maxTokens ?? req.model.maxOutput) + (thinkingBudget || 0),
-        thinkingConfig: {
-          // Pro models cannot disable thinking; use the smallest budget instead.
-          thinkingBudget: isPro && thinkingBudget === 0 ? 128 : thinkingBudget,
-          includeThoughts: thinkingBudget > 0,
-        },
+        maxOutputTokens: (req.maxTokens ?? req.model.maxOutput) + (levelBased ? 8192 : thinkingBudget || 0),
+        thinkingConfig,
       },
     };
 
@@ -92,6 +94,12 @@ export const googleProvider: ChatProvider = {
       throw err;
     }
     yield { type: "usage", ...usage };
+    if (!finish) {
+      // The stream closed without a finish reason: the provider dropped the connection mid-answer.
+      yield { type: "error", message: `${req.model.label} stopped responding mid-answer. Try again.`, code: "provider_incomplete" };
+      yield { type: "done", stopReason: "error" };
+      return;
+    }
     yield {
       type: "done",
       stopReason: finish === "MAX_TOKENS" ? "max_tokens" : finish === "SAFETY" || finish === "PROHIBITED_CONTENT" ? "refusal" : "end",
