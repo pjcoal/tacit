@@ -1,4 +1,4 @@
-import { ArrowUp, Check, FileCode2, Lock, Paperclip, ShieldCheck, Wallet } from "lucide-react";
+import { ArrowUp, Check, Lock, Paperclip, ShieldCheck, Wallet } from "lucide-react";
 import type { ReactNode } from "react";
 import { LogoMark } from "@/components/ui/logo";
 import { Reveal } from "@/components/ui/reveal";
@@ -46,7 +46,8 @@ function Tag({ children, tone }: { children: ReactNode; tone: "mint" | "accent" 
 
 /** "This is the actual app": the chat home screen, a privacy receipt and the Solana connector. */
 export function AppShowcase() {
-  const { appName, freeDailyMessages } = getPublicConfig();
+  const { appName, appUrl, freeDailyMessages } = getPublicConfig();
+  const apiBase = `${appUrl.replace(/\/$/, "")}/api`;
   return (
     <section id="app" className="scroll-mt-20 py-20 md:py-28">
       <div className="container-x">
@@ -138,42 +139,40 @@ export function AppShowcase() {
             </Window>
           </Reveal>
 
-          {/* Code */}
+          {/* Claude Code through the API */}
           <Reveal delay={0.1}>
-            <Window title="Code" caption="Code, the build agent">
+            <Window title="Terminal · claude" caption="Claude Code, through Veil">
               <div className="space-y-4 p-5 sm:p-6">
-                <div className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-sunken px-4 py-2.5 text-[14px]">
-                  Build a waitlist page for Kestrel with an email signup.
-                </div>
-                <div className="grid grid-cols-[120px_1fr] overflow-hidden rounded-xl border border-line sm:grid-cols-[140px_1fr]">
-                  <ul className="space-y-0.5 border-r border-line bg-sunken p-2 font-mono text-[12px]">
-                    {[
-                      ["index.html", true],
-                      ["styles.css", false],
-                      ["app.js", false],
-                    ].map(([f, active]) => (
-                      <li key={f as string} className={`flex items-center gap-1.5 truncate rounded-md px-2 py-1.5 ${active ? "bg-surface text-ink" : "text-ink-2"}`}>
-                        <FileCode2 size={12} className="shrink-0 text-dim" /> {f as string}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="bg-[#fbfbf9] p-4 text-[#101113]">
-                    <p className="font-serif text-[22px] leading-none">Kestrel</p>
-                    <p className="mt-2 text-[12px] text-[#4a4e52]">Analytics that respect your users. Join the waitlist.</p>
-                    <div className="mt-3 flex gap-1.5">
-                      <span className="h-8 min-w-0 flex-1 rounded-md border border-black/15 bg-white px-2 text-[11.5px] leading-8 text-[#6b7073]">you@company.com</span>
-                      <span className="h-8 shrink-0 rounded-md bg-[#101113] px-3 text-[11.5px] leading-8 text-white">Join</span>
-                    </div>
-                  </div>
-                </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <Tag tone="mint">Sandboxed preview</Tag>
-                  <Tag tone="plain">No network</Tag>
-                  <Tag tone="plain">3 files</Tag>
+                  <Tag tone="accent">Claude Code</Tag>
+                  <Tag tone="mint">Filtered first</Tag>
+                </div>
+                <div className="rounded-xl bg-[#0b0c0e] p-4 font-mono text-[12px] leading-[1.8] text-[#c9cdd0] [overflow-wrap:anywhere]">
+                  <p>
+                    <span className="text-[#6b7073]">$</span> export ANTHROPIC_BASE_URL={apiBase}
+                  </p>
+                  <p>
+                    <span className="text-[#6b7073]">$</span> export ANTHROPIC_AUTH_TOKEN=veil_sk_••••••••
+                  </p>
+                  <p>
+                    <span className="text-[#6b7073]">$</span> claude
+                  </p>
+                  <p className="mt-3 text-white">
+                    <span className="text-[#b5aaff]">&gt;</span> Deploy fails for tom@northwind.io on 84.203.17.9. Fix it.
+                  </p>
+                  <p className="text-[#5fd6b4]">
+                    ⎿ Veil replaced 2 values: <span className="text-[#b5aaff]">[EMAIL_1]</span> <span className="text-[#b5aaff]">[IP_1]</span>
+                  </p>
+                  <p className="mt-2">
+                    <span className="text-[#e8eae8]">●</span> Read deploy.sh
+                  </p>
+                  <p>
+                    <span className="text-[#e8eae8]">●</span> The health check hits port 80 on 84.203.17.9, but the service listens on 8080. Updated deploy.sh.
+                  </p>
                 </div>
                 <p className="flex items-start gap-1.5 text-[11.5px] leading-relaxed text-dim">
-                  <Check size={12} className="mt-0.5 shrink-0" /> Every file is shown in full. The preview runs locked down, with no access to your session or the
-                  network.
+                  <Check size={12} className="mt-0.5 shrink-0" /> Point Claude Code at Veil with an API key. Personal details are swapped out before the request
+                  leaves, and put back in the answer.
                 </p>
               </div>
             </Window>
