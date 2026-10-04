@@ -83,6 +83,8 @@ const schema = z.object({
   TOKEN_GATE_HOLDER_MIN: numFromEnv(0, 0),
 
   ANTHROPIC_API_KEY: optionalString,
+  /** Required for keys that aren't scoped to a single workspace. */
+  ANTHROPIC_WORKSPACE_ID: optionalString,
   OPENAI_API_KEY: optionalString,
   OPENROUTER_API_KEY: optionalString,
   GOOGLE_API_KEY: optionalString,

@@ -9,7 +9,12 @@ let client: Anthropic | null = null;
 function getClient(): Anthropic {
   const key = env().ANTHROPIC_API_KEY;
   if (!key) throw new ProviderError("Anthropic is not configured", 503, "provider_not_configured");
-  client ??= new Anthropic({ apiKey: key, maxRetries: 2 });
+  const workspace = env().ANTHROPIC_WORKSPACE_ID;
+  client ??= new Anthropic({
+    apiKey: key,
+    maxRetries: 2,
+    ...(workspace ? { defaultHeaders: { "anthropic-workspace-id": workspace } } : {}),
+  });
   return client;
 }
 
