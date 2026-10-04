@@ -29,7 +29,7 @@ function hashString(s: string) {
   return h;
 }
 
-function Preview({ html }: { html: string }) {
+function Preview({ html, ready }: { html: string; ready: boolean }) {
   const frame = useRef<HTMLIFrameElement>(null);
   const [runs, setRuns] = useState(0);
   useEffect(() => {
@@ -44,12 +44,24 @@ function Preview({ html }: { html: string }) {
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-2 border-b border-line-2 px-3 py-2 text-[12px] text-dim">
         <span className="dot bg-mint" /> {localBrowserSandbox.label} · {localBrowserSandbox.description}
-        <button onClick={() => setRuns((n) => n + 1)} className="ml-auto inline-flex items-center gap-1 rounded px-1.5 py-0.5 hover:text-ink">
-          <Play size={12} /> Rerun
-        </button>
+        {ready ? (
+          <button onClick={() => setRuns((n) => n + 1)} className="ml-auto inline-flex items-center gap-1 rounded px-1.5 py-0.5 hover:text-ink">
+            <Play size={12} /> Rerun
+          </button>
+        ) : null}
       </div>
-      {/* A new key (content hash or manual rerun) remounts the sandbox with a fresh document. */}
-      <iframe key={`${hashString(html)}:${runs}`} ref={frame} title="Project preview" src="/sandbox" sandbox="allow-scripts allow-modals" className="min-h-0 w-full flex-1 bg-white" />
+      {ready ? (
+        // A new key (content hash or manual rerun) remounts the sandbox with a fresh document.
+        <iframe key={`${hashString(html)}:${runs}`} ref={frame} title="Project preview" src="/sandbox" sandbox="allow-scripts allow-modals" className="min-h-0 w-full flex-1 bg-white" />
+      ) : (
+        <div className="grid min-h-0 flex-1 place-items-center bg-sunken p-8 text-center">
+          <div>
+            <Play size={22} className="mx-auto text-faint" />
+            <p className="mt-3 text-[14px] font-medium">Nothing to preview yet</p>
+            <p className="mt-1 text-[13px] text-dim">Describe what to build and the live preview appears here.</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -348,7 +360,7 @@ export function CodeAgent() {
       </div>
 
       {/* Mobile: one pane at a time */}
-      <div className="min-h-0 flex-1 lg:hidden">{pane === "chat" ? chatPanel : pane === "files" ? filesPanel : pane === "preview" ? <Preview html={html} /> : logPanel}</div>
+      <div className="min-h-0 flex-1 lg:hidden">{pane === "chat" ? chatPanel : pane === "files" ? filesPanel : pane === "preview" ? <Preview html={html} ready={Boolean(files["index.html"])} /> : logPanel}</div>
 
       {/* Desktop: chat + workspace */}
       <div className="hidden min-h-0 flex-1 lg:grid lg:grid-cols-[minmax(340px,0.85fr)_1.15fr]">
@@ -361,7 +373,7 @@ export function CodeAgent() {
               </button>
             ))}
           </div>
-          <div className="min-h-0 flex-1">{wide === "preview" ? <Preview html={html} /> : wide === "files" ? filesPanel : logPanel}</div>
+          <div className="min-h-0 flex-1">{wide === "preview" ? <Preview html={html} ready={Boolean(files["index.html"])} /> : wide === "files" ? filesPanel : logPanel}</div>
         </div>
       </div>
     </div>
