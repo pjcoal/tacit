@@ -1,7 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { AGENT_TEMPLATES, MAX_STARTERS } from "@/lib/agents/templates";
 import { createPlaceholderMap, restoreResponse, sendSanitizedPrompt } from "@/lib/privacy";
-import { LIMITS } from "@/lib/security/uploads";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -41,13 +39,5 @@ describe("custom agents", () => {
     const bodies = captureFetch();
     await sendSanitizedPrompt({ history: [], userText: "hi", mode: "smart", map: createPlaceholderMap(), model: "auto" });
     expect(bodies[0]).not.toHaveProperty("agent");
-  });
-
-  it("ships templates that fit the limits", () => {
-    for (const t of AGENT_TEMPLATES) {
-      expect(t.name.length).toBeLessThanOrEqual(60);
-      expect(t.instructions.length).toBeLessThanOrEqual(LIMITS.maxAgentInstructions);
-      expect(t.starters.length).toBeLessThanOrEqual(MAX_STARTERS);
-    }
   });
 });

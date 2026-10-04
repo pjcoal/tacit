@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/app/page-header";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Segmented } from "@/components/ui/segmented";
-import { AGENT_TEMPLATES, BLANK_AGENT, MAX_STARTERS, type AgentDraft } from "@/lib/agents/templates";
+import { BLANK_AGENT, MAX_STARTERS, type AgentDraft } from "@/lib/agents/templates";
 import { PRIVACY_MODE_INFO, sanitizePrompt } from "@/lib/privacy";
 import { LIMITS } from "@/lib/security/uploads";
 import { deleteAgent, listAgents, putAgent, uid, type Agent } from "@/lib/storage/db";
@@ -66,7 +66,10 @@ export function AgentsPage() {
         ) : agents.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-line px-6 py-10 text-center">
             <p className="text-[15px] font-medium">No agents yet</p>
-            <p className="mt-1 text-[13.5px] text-ink-2">Start from a template below, or build one from scratch.</p>
+            <p className="mt-1 text-[13.5px] text-ink-2">Give it a role, instructions and a few starters, then chat with it.</p>
+            <Button className="mt-5" onClick={() => setEditing({ id: null, draft: { ...BLANK_AGENT } })}>
+              <Plus size={15} /> New agent
+            </Button>
           </div>
         ) : (
           <ul className="grid gap-3 sm:grid-cols-2" data-testid="agent-list">
@@ -113,26 +116,6 @@ export function AgentsPage() {
             ))}
           </ul>
         )}
-      </section>
-
-      <section className="mt-12" aria-label="Templates">
-        <h2 className="eyebrow mb-3">Start from a template</h2>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {AGENT_TEMPLATES.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setEditing({ id: null, draft: { ...t, starters: [...t.starters] } })}
-              className="flex items-start gap-3 rounded-2xl border border-line bg-surface p-4 text-left transition-colors hover:border-ink/30"
-              data-testid={`template-${t.id}`}
-            >
-              <AgentAvatar name={t.name} size={36} />
-              <span className="min-w-0">
-                <span className="block text-[14.5px] font-medium">{t.name}</span>
-                <span className="mt-0.5 block text-[13px] text-ink-2">{t.description}</span>
-              </span>
-            </button>
-          ))}
-        </div>
       </section>
 
       {editing ? <AgentEditor key={editing.id ?? "new"} initial={editing} onClose={() => setEditing(null)} onSave={save} /> : null}

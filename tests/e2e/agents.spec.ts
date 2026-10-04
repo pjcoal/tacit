@@ -33,11 +33,8 @@ test.describe("agents", () => {
     await page.reload();
     await expect(page.getByTestId("agent-chip")).toContainText("Release captain");
 
-    // Listed on the agents page, from a template too.
+    // Listed on the agents page.
     await page.goto("/app/agents");
     await expect(page.getByTestId("agent-list")).toContainText("Release captain");
-    await page.getByTestId("template-reviewer").click();
-    await page.getByTestId("save-agent").click();
-    await expect(page.getByTestId("agent-list")).toContainText("Code reviewer");
   });
 });
