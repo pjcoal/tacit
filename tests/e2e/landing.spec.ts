@@ -36,7 +36,7 @@ test.describe("landing page", () => {
   test("the models section never names a model", async ({ page }) => {
     await page.goto("/#models");
     const section = page.locator("#models");
-    await expect(section).toContainText("One quiet route");
+    await expect(section).toContainText("Only placeholders leave");
     for (const name of ["Local Echo", "Gemini", "GPT", "Claude", "not configured"]) await expect(section).not.toContainText(name);
   });
 

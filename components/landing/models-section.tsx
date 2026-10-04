@@ -1,6 +1,6 @@
 import { Reveal } from "@/components/ui/reveal";
 import { Section, SectionHeader } from "@/components/ui/section";
-import { ConvergeFlow } from "./converge-flow";
+import { VeilScan } from "./veil-scan";
 
 export function ModelsSection() {
   return (
@@ -11,15 +11,15 @@ export function ModelsSection() {
           eyebrow="Auto"
           title={
             <>
-              Every question.
+              Paste the real thing.
               <br />
-              <span className="text-ink-2">One quiet route.</span>
+              <span className="text-ink-2">Only placeholders leave.</span>
             </>
           }
-          lead="However tangled the question, it takes the same path: personal details are stripped on your device, the request is answered, and the real values are put back before you read it. You never pick an engine — Auto handles that."
+          lead="Logs, keys, customer emails, wallet addresses: paste them as they are. Veil swaps each one for a placeholder before anything leaves your device, Auto routes the request to the right model for the job, and the real values come back only on your screen."
         />
         <Reveal delay={0.1}>
-          <ConvergeFlow />
+          <VeilScan />
         </Reveal>
       </div>
     </Section>
