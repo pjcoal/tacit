@@ -411,11 +411,11 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-line">
-        <div className="container-x flex flex-col justify-between gap-2 py-6 text-[12.5px] text-dim sm:flex-row">
+        <div className="container-x flex flex-col justify-between gap-2 py-6 font-mono text-[12.5px] text-dim sm:flex-row">
           <span>
-            © {new Date().getFullYear()} {cfg.appName}. Not financial advice; tokens are volatile.
+            © {new Date().getFullYear()} {cfg.appName}. Anonymous private AI.
           </span>
-          <span>No cookies for tracking · No analytics scripts</span>
+          <span>Settled on Solana · no prompt logs</span>
         </div>
       </div>
     </footer>
