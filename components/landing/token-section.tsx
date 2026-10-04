@@ -109,9 +109,9 @@ export function TokenSection() {
           <Reveal>
             <p className="font-mono text-[11px] tracking-[0.18em] text-[#b5aaff] uppercase">{sym} · on Solana</p>
             <h2 className="display mt-5 text-[clamp(44px,6.4vw,88px)] text-balance text-white">
-              Spend it.
+              Build more.
               <br />
-              <span className="text-white/60">Shrink the supply.</span>
+              <span className="text-white/60">Burn more.</span>
             </h2>
             <p className="mt-6 max-w-[54ch] text-[16.5px] leading-relaxed text-panel-dim">
               Pay for Veil with {sym}{burnPct > 0 ? ` and get ${burnPct}% off` : ""}. Every token you pay with is burned on the spot, so the more
