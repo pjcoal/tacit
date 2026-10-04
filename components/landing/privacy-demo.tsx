@@ -27,10 +27,11 @@ const PRESETS = [
     reply: (p: string[]) => `I've prepared a 2 SOL transfer to ${p[0] ?? "that address"} for you to review in your wallet, plus a note for ${p[1] ?? "them"} about the ${p[2] ?? ""} trip.`,
   },
   {
-    id: "dinner",
-    label: "Restaurants",
-    text: "Find restaurants near my home in New York and send the shortlist to Elena.",
-    reply: (p: string[]) => `Here are four places within walking distance in ${p[0] ?? "the area"}. I've drafted a short note for ${p[1] ?? "them"} with the shortlist.`,
+    id: "debug",
+    label: "Debug",
+    text: "Find out why Daniel Reyes (daniel@northwind.io) was charged twice. Our database is postgres://admin:Tr0ub4dor-9x@db.northwind.io:5432/prod.",
+    reply: (p: string[]) =>
+      `Here's a query that finds duplicate charges for ${pick(p, "EMAIL") ?? "that customer"}, and a fix that makes checkout idempotent. I've left the connection password out of the script; it reads it from an environment variable.`,
   },
   {
     id: "email",
@@ -52,7 +53,7 @@ function Column({ icon: Icon, step, title, where, tone, children }: { icon: type
           <Icon size={11} /> {where}
         </span>
       </div>
-      <div className="mt-3 flex-1 text-[14px] leading-relaxed">{children}</div>
+      <div className="mt-3 min-w-0 flex-1 text-[14px] leading-relaxed [overflow-wrap:anywhere]">{children}</div>
     </div>
   );
 }
