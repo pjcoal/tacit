@@ -1,4 +1,4 @@
-import { ArrowUp, Check, Eye, Lock, Paperclip, ShieldCheck, Wallet } from "lucide-react";
+import { ArrowUp, Check, FileCode2, Lock, Paperclip, ShieldCheck, Wallet } from "lucide-react";
 import type { ReactNode } from "react";
 import { LogoMark } from "@/components/ui/logo";
 import { Reveal } from "@/components/ui/reveal";
@@ -138,36 +138,42 @@ export function AppShowcase() {
             </Window>
           </Reveal>
 
-          {/* Connector */}
+          {/* Code */}
           <Reveal delay={0.1}>
-            <Window title="Connect" caption="Connect, the Solana connector">
-              <div className="space-y-3 p-5 sm:p-6">
-                {[
-                  { mark: "◎", bg: "bg-[linear-gradient(135deg,#9945ff,#14f195)] text-white", name: "Solana wallet", tag: <Tag tone="mint">Connected</Tag>, sub: "balances · tokens · history" },
-                  { mark: <Eye size={16} />, bg: "bg-ink text-bg", name: "Read tools", tag: <Tag tone="plain">In browser</Tag>, sub: "run on your device, not our servers" },
-                  { mark: <Wallet size={16} />, bg: "bg-accent text-white", name: "Transfers", tag: <Tag tone="accent">Preview only</Tag>, sub: "prepared by the AI · signed by you" },
-                ].map((r) => (
-                  <div key={r.name} className="flex items-center gap-3.5 rounded-xl border border-line bg-bg p-3.5">
-                    <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg text-[18px] font-semibold ${r.bg}`}>{r.mark}</span>
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-[15px] font-medium">{r.name}</span>
-                        {r.tag}
-                      </div>
-                      <p className="mt-0.5 font-mono text-[12px] text-dim">{r.sub}</p>
+            <Window title="Code" caption="Code, the build agent">
+              <div className="space-y-4 p-5 sm:p-6">
+                <div className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-sunken px-4 py-2.5 text-[14px]">
+                  Build a waitlist page for Kestrel with an email signup.
+                </div>
+                <div className="grid grid-cols-[120px_1fr] overflow-hidden rounded-xl border border-line sm:grid-cols-[140px_1fr]">
+                  <ul className="space-y-0.5 border-r border-line bg-sunken p-2 font-mono text-[12px]">
+                    {[
+                      ["index.html", true],
+                      ["styles.css", false],
+                      ["app.js", false],
+                    ].map(([f, active]) => (
+                      <li key={f as string} className={`flex items-center gap-1.5 truncate rounded-md px-2 py-1.5 ${active ? "bg-surface text-ink" : "text-ink-2"}`}>
+                        <FileCode2 size={12} className="shrink-0 text-dim" /> {f as string}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="bg-[#fbfbf9] p-4 text-[#101113]">
+                    <p className="font-serif text-[22px] leading-none">Kestrel</p>
+                    <p className="mt-2 text-[12px] text-[#4a4e52]">Analytics that respect your users. Join the waitlist.</p>
+                    <div className="mt-3 flex gap-1.5">
+                      <span className="h-8 min-w-0 flex-1 rounded-md border border-black/15 bg-white px-2 text-[11.5px] leading-8 text-[#6b7073]">you@company.com</span>
+                      <span className="h-8 shrink-0 rounded-md bg-[#101113] px-3 text-[11.5px] leading-8 text-white">Join</span>
                     </div>
                   </div>
-                ))}
-                <div className="flex flex-col items-start justify-between gap-3 rounded-xl border border-line bg-sunken p-3.5 sm:flex-row sm:items-center">
-                  <span className="font-mono text-[12.5px]">AI sends funds</span>
-                  <span className="flex overflow-hidden rounded-lg border border-line text-[12px]">
-                    <span className="bg-ink px-3 py-1.5 whitespace-nowrap text-bg">Never</span>
-                    <span className="px-3 py-1.5 whitespace-nowrap text-dim">Your wallet decides</span>
-                  </span>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Tag tone="mint">Sandboxed preview</Tag>
+                  <Tag tone="plain">No network</Tag>
+                  <Tag tone="plain">3 files</Tag>
                 </div>
                 <p className="flex items-start gap-1.5 text-[11.5px] leading-relaxed text-dim">
-                  <Check size={12} className="mt-0.5 shrink-0" /> Your address reaches the model only as a placeholder. Every transfer opens in your own
-                  wallet for approval.
+                  <Check size={12} className="mt-0.5 shrink-0" /> Every file is shown in full. The preview runs locked down, with no access to your session or the
+                  network.
                 </p>
               </div>
             </Window>
