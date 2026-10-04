@@ -13,13 +13,13 @@ const PRESETS = [
   {
     id: "dinner",
     label: "Restaurants",
-    text: "Find restaurants near my home in Lisbon and send the shortlist to Elena.",
+    text: "Find restaurants near my home in New York and send the shortlist to Elena.",
     reply: (p: string[]) => `Here are four places within walking distance in ${p[0] ?? "the area"}. I've drafted a short note for ${p[1] ?? "them"} with the shortlist.`,
   },
   {
     id: "transfer",
     label: "Wallet",
-    text: "Prepare a transfer of 2 SOL to 9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM and tell Priya it's for the Lisbon trip.",
+    text: "Prepare a transfer of 2 SOL to 9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM and tell Priya it's for the New York trip.",
     reply: (p: string[]) => `I've prepared a 2 SOL transfer to ${p[0] ?? "that address"} for you to review in your wallet, plus a note for ${p[1] ?? "them"} about the ${p[2] ?? ""} trip.`,
   },
   {

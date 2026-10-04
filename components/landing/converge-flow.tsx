@@ -21,7 +21,7 @@ const OUTPUT = `M ${CX} ${CY} C ${CX + 90} ${CY}, ${W - 170} ${CY}, ${W - 56} ${
 
 const TAGS_IN = [
   { x: 18, y: 64, text: "maya@proton.me" },
-  { x: 54, y: 196, text: "Lisbon" },
+  { x: 54, y: 196, text: "New York" },
   { x: 26, y: 318, text: "7xKX…sAsU" },
 ];
 const TAGS_OUT = [

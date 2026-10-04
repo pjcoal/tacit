@@ -91,7 +91,7 @@ export function AppSection() {
                 <Plus size={14} /> New chat
               </span>
               <p className="eyebrow mt-5 px-2">This device</p>
-              {["Lisbon itinerary", "Lease reminder", "Asthma questions", "Token taxes 2025", "Landing page copy"].map((t, i) => (
+              {["New York itinerary", "Lease reminder", "Asthma questions", "Token taxes 2025", "Landing page copy"].map((t, i) => (
                 <span key={t} className={`mt-1 truncate rounded-md px-2 py-1.5 text-[13px] ${i === 0 ? "bg-surface text-ink" : "text-ink-2"}`}>
                   {t}
                 </span>

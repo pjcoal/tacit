@@ -105,7 +105,7 @@ function ChatPreview() {
     <Frame title="tacit / chat">
       <div className="space-y-4 p-4 sm:p-5">
         <div className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-sunken px-4 py-3 text-[13.5px]">
-          Plan three days in Lisbon for me — we&apos;re staying at 12 Rua da Rosa.
+          Plan three days in New York for me — we&apos;re staying at 88 Orchard Street.
           <div className="mt-2 flex items-center gap-1.5 font-mono text-[10.5px] text-mint">
             <Shield size={11} /> 2 replaced before sending
           </div>
