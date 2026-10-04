@@ -44,6 +44,7 @@ test.describe("landing page", () => {
     await page.goto("/#token");
     const token = page.locator("#token");
     await expect(token.getByText("Planned").first()).toBeVisible();
+    await expect(token).toContainText("Shrink the supply");
     await expect(token.getByRole("link", { name: /View on pump.fun/ })).toHaveAttribute("href", /pump\.fun\/coin\/So11111111111111111111111111111111111111112/);
     await expect(token.getByRole("link", { name: /View on Solana Explorer/ })).toHaveAttribute("href", /cluster=devnet/);
   });

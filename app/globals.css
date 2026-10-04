@@ -503,3 +503,17 @@ em.font-serif {
     opacity: 0;
   }
 }
+
+@keyframes bv-shed {
+  0% {
+    transform: translate(var(--sx), 18px) scale(1);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(0.3);
+    opacity: 0;
+  }
+}

@@ -8,10 +8,8 @@ import { AppSection, ApiSection, CodeSection, ConnectorSection, FinalCta, Footer
 import { Showcase } from "@/components/landing/showcase";
 import { TokenSection } from "@/components/landing/token-section";
 import { Section, SectionHeader } from "@/components/ui/section";
-import { getPublicConfig } from "@/server/public-config";
 
 export default function Home() {
-  const cfg = getPublicConfig();
   return (
     <>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-lg focus:bg-ink focus:px-3 focus:py-2 focus:text-bg">
@@ -72,23 +70,7 @@ export default function Home() {
           </div>
         </Section>
 
-        <Section id="token">
-          <SectionHeader
-            index="10"
-            eyebrow={`$${cfg.token.symbol} token`}
-            title={
-              <>
-                Usage flows in.
-                <br />
-                <span className="text-ink-2">Supply flows out.</span>
-              </>
-            }
-            lead={`$${cfg.token.symbol} launches on pump.fun and trades on its bonding curve, then on PumpSwap after graduation. Paying for credits with it earns a bonus today; buyback and burn are proposed utility, and labelled that way until they're live.`}
-          />
-          <div className="mt-12">
-            <TokenSection />
-          </div>
-        </Section>
+        <TokenSection />
 
         <ApiSection />
 
